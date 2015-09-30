@@ -227,5 +227,14 @@ namespace Dynamo.Nodes
                 ViewModel.WorkspaceViewModel.DynamoViewModel.DeleteCommand.Execute(null);
             }
         }
+
+        private void OnGraphLayoutAnnotation(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.Select();
+                ViewModel.WorkspaceViewModel.DynamoViewModel.GraphAutoLayoutCommand.Execute(null);
+            }
+        }
     }
 }

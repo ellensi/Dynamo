@@ -1054,12 +1054,31 @@ namespace Dynamo.ViewModels
         {
             if (Model.Nodes.Count() == 0)
                 return;
+            
+            var selection = DynamoSelection.Instance.Selection;
 
-            GenerateCombinedGraph();
+            bool isInternalLayout = selection.Count > 0 &&
+                selection.All(x => x is AnnotationModel ||
+                selection.Where(g => g is AnnotationModel)
+                .Any(g => (g as AnnotationModel).SelectedModels.Contains(x)));
+            
+            if (!isInternalLayout)
+            {
+                GenerateCombinedGraph();
+            }
+            else
+            {
+                GenerateCombinedGroupGraph();
+            }
+
             GenerateSeparateSubgraphs();
-            Model.LayoutSubgraphs.Skip(1).ToList().ForEach(g => RunLayoutSubgraph(g));
+            Model.LayoutSubgraphs.Skip(1).ToList().ForEach(
+                g => RunLayoutSubgraph(g, isInternalLayout));
             AvoidSubgraphOverlap();
             SaveLayoutGraph();
+
+            foreach (var model in selection)
+                model.Select();
         }
 
         private const double VerticalGraphDistance = 30;
@@ -1126,6 +1145,61 @@ namespace Dynamo.ViewModels
                     nd.LinkedNotes.Add(note);
                 }
             }
+
+            // Support undo
+            List<ModelBase> undoItems = new List<ModelBase>();
+            undoItems.AddRange(Model.Nodes);
+            undoItems.AddRange(Model.Notes);
+            if (DynamoSelection.Instance.Selection.Count > 0)
+            {
+                undoItems = undoItems.Where(x => x.IsSelected).ToList();
+            }
+            WorkspaceModel.RecordModelsForModification(undoItems, Model.UndoRecorder);
+        }
+
+        private void GenerateCombinedGroupGraph()
+        {
+            Model.LayoutSubgraphs = new List<GraphLayout.Graph>();
+            Model.LayoutSubgraphs.Add(new GraphLayout.Graph());
+
+            GraphLayout.Graph combinedGraph = Model.LayoutSubgraphs.First();
+
+            foreach (NodeModel node in Model.Nodes)
+            {
+                combinedGraph.AddNode(node.GUID, node.Width, node.Height, node.X, node.Y,
+                    node.IsSelected || DynamoSelection.Instance.Selection.Count == 0);
+            }
+
+            foreach (ConnectorModel edge in Model.Connectors)
+            {
+                combinedGraph.AddEdge(edge.Start.Owner.GUID, edge.End.Owner.GUID,
+                    edge.Start.Center.X, edge.Start.Center.Y, edge.End.Center.X, edge.End.Center.Y);
+            }
+
+            foreach (NoteModel note in Model.Notes)
+            {
+                // Link a note to the nearest node
+                GraphLayout.Node nd = combinedGraph.Nodes.OrderBy(node =>
+                    Math.Pow(node.X + node.Width / 2 - note.X - note.Width / 2, 2) +
+                    Math.Pow(node.Y + node.Height / 2 - note.Y - note.Height / 2, 2)).FirstOrDefault();
+
+                if (nd != null)
+                {
+                    nd.LinkedNotes.Add(note);
+                }
+            }
+
+            // Support undo
+            List<ModelBase> undoItems = new List<ModelBase>();
+            foreach (var group in Model.Annotations)
+            {
+                if (group.IsSelected)
+                {
+                    group.Deselect();
+                    undoItems.AddRange(group.SelectedModels);
+                }
+            }
+            WorkspaceModel.RecordModelsForModification(undoItems, Model.UndoRecorder);
         }
 
         /// <summary>
@@ -1189,13 +1263,8 @@ namespace Dynamo.ViewModels
             }
         }
 
-        private void RunLayoutSubgraph(GraphLayout.Graph graph)
+        private void RunLayoutSubgraph(GraphLayout.Graph graph, bool isInternalLayout)
         {
-            // Support undo for graph layout command
-            List<ModelBase> undoItems = new List<ModelBase>();
-            undoItems.AddRange(Model.Nodes);
-            undoItems.AddRange(Model.Notes);
-            WorkspaceModel.RecordModelsForModification(undoItems, Model.UndoRecorder);
             graph.RecordInitialPosition();
 
             // Sugiyama algorithm steps
@@ -1205,7 +1274,7 @@ namespace Dynamo.ViewModels
 
             // Node and graph positioning
             graph.DistributeNodePosition();
-            graph.SetGraphPosition();
+            graph.SetGraphPosition(isInternalLayout);
         }
 
         /// <summary>
