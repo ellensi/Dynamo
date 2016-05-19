@@ -91,6 +91,11 @@ namespace Dynamo
             this.CurrentDynamoModel = DynamoModel.Start(CreateStartConfiguration(settings));
         }
 
+        protected void StartDynamoWithoutPreload(IPreferences settings = null)
+        {
+            this.CurrentDynamoModel = DynamoModel.Start(CreateStartConfiguration(settings));
+        }
+
         /// <summary>
         /// Derived test classes could override it to provide different 
         /// configuration.
