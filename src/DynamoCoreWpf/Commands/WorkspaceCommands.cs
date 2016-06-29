@@ -62,7 +62,7 @@ namespace Dynamo.ViewModels
             get {
                 return _graphAutoLayoutCommand
                     ?? (_graphAutoLayoutCommand =
-                        new DelegateCommand(DoGraphAutoLayout, CanDoGraphAutoLayout));
+                        new DelegateCommand(DoGraphAutoLayout, CanDoGraphAutoLayout, true));
             }
         }
 
@@ -106,7 +106,7 @@ namespace Dynamo.ViewModels
             get
             {
                 if(_nodeFromSelectionCommand == null)
-                    _nodeFromSelectionCommand = new DelegateCommand(CreateNodeFromSelection, CanCreateNodeFromSelection);
+                    _nodeFromSelectionCommand = new DelegateCommand(CreateNodeFromSelection, CanCreateNodeFromSelection, true);
 
                 return _nodeFromSelectionCommand;
             }
