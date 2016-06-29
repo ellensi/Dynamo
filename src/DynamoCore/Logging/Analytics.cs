@@ -1,5 +1,6 @@
 ﻿using System;
 using Dynamo.Models;
+using Autodesk.Analytics.Events;
 
 namespace Dynamo.Logging
 {
@@ -89,7 +90,10 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            return client.CreateTimedEvent(category, variable, description);
+            var e = client.CreateTimedEvent(category, variable, description) as TimedEvent;
+
+            e.Track();
+            return e;
         }
 
         /// <summary>
@@ -102,7 +106,10 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            return client.CreateCommandEvent(name);
+            var e = client.CreateCommandEvent(name) as CommandEvent;
+
+            e.Track();
+            return e;
         }
 
         /// <summary>
@@ -117,7 +124,10 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            return client.CreateFileOperationEvent(filepath, operation, size);
+            var e = client.CreateFileOperationEvent(filepath, operation, size) as FileOperationEvent;
+
+            e.Track();
+            return e;
         }
 
         /// <summary>
