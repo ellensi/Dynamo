@@ -302,6 +302,11 @@ namespace Dynamo.Models
             ///
             protected abstract void SerializeCore(XmlElement element);
 
+            /// <summary>
+            /// Derived classes may override this property into false to disable analytics tracking.
+            /// </summary>
+            internal virtual bool TrackAnalytics { get { return true; } }
+
             #endregion
         }
 
@@ -567,6 +572,8 @@ namespace Dynamo.Models
                 helper.SetAttribute("ShowErrors", ShowErrors);
                 helper.SetAttribute("CancelRun", CancelRun);
             }
+
+            internal override bool TrackAnalytics { get { return false; } }
 
             #endregion
         }
@@ -1154,6 +1161,8 @@ namespace Dynamo.Models
                 helper.SetAttribute("Modifiers", ((int)Modifiers));
             }
 
+            internal override bool TrackAnalytics { get { return false; } }
+
             #endregion
         }
 
@@ -1215,6 +1224,8 @@ namespace Dynamo.Models
                 helper.SetAttribute("Height", Region.Height);
                 helper.SetAttribute("IsCrossSelection", IsCrossSelection);
             }
+
+            internal override bool TrackAnalytics { get { return false; } }
 
             #endregion
         }
@@ -1285,6 +1296,8 @@ namespace Dynamo.Models
                 helper.SetAttribute("Y", MouseCursor.Y);
                 helper.SetAttribute("DragOperation", ((int)DragOperation));
             }
+
+            internal override bool TrackAnalytics { get { return false; } }
 
             #endregion
         }
@@ -1405,6 +1418,8 @@ namespace Dynamo.Models
                 helper.SetAttribute("Type", ((int)Type));
                 helper.SetAttribute("ConnectionMode", ((int)ConnectionMode));
             }
+
+            internal override bool TrackAnalytics { get { return false; } }
 
             #endregion
         }

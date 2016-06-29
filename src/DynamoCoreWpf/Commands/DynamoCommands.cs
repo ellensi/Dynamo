@@ -10,7 +10,9 @@ namespace Dynamo.ViewModels
     {
         // Automation related data members.
         private AutomationSettings automationSettings = null;
-        
+
+        // For analytics.
+        private IDisposable logEvent = null;
 
         #region Automation Related Methods
 
@@ -148,6 +150,13 @@ namespace Dynamo.ViewModels
                 default:
                     throw new InvalidOperationException("Unhandled command name");
             }
+
+            if (command.TrackAnalytics)
+            {
+                // Report time span and close the log event
+                logEvent.Dispose();
+                logEvent = null;
+            }
         }
 
         void OnModelCommandStarting(DynamoModel.RecordableCommand command)
@@ -188,6 +197,12 @@ namespace Dynamo.ViewModels
 
                 default:
                     throw new InvalidOperationException("Unhandled command name");
+            }
+
+            if (command.TrackAnalytics)
+            {
+                // Create and track log event
+                logEvent = Dynamo.Logging.Analytics.CreateCommandEvent(name);
             }
         }
 
