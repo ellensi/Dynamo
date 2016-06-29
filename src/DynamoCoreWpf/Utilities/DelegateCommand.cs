@@ -13,6 +13,8 @@ namespace Dynamo.UI.Commands
 
         private readonly Predicate<object> _canExecute;
         private readonly Action<object> _execute;
+        private bool _trackAnalytics = false;
+        private IDisposable logEvent;
 
         public event EventHandler CanExecuteChanged;
 
@@ -22,10 +24,12 @@ namespace Dynamo.UI.Commands
         }
 
         public DelegateCommand(Action<object> execute,
-                       Predicate<object> canExecute)
+                       Predicate<object> canExecute,
+                       bool trackAnalytics = false)
         {
             _execute = execute;
             _canExecute = canExecute;
+            _trackAnalytics = trackAnalytics;
         }
 
         public bool CanExecute(object parameter)
@@ -35,8 +39,28 @@ namespace Dynamo.UI.Commands
 
         public void Execute(object parameter)
         {
-            //OnExecute(parameter);
+            OnExecuteStart();
             _execute(parameter);
+            OnExecuteComplete();
+        }
+
+        private void OnExecuteStart()
+        {
+            if (_trackAnalytics)
+            {
+                var name = _execute.Method.Name;
+                if (!string.IsNullOrEmpty(name))
+                    logEvent = Dynamo.Logging.Analytics.CreateCommandEvent(name);
+            }
+        }
+
+        private void OnExecuteComplete()
+        {
+            if (_trackAnalytics)
+            {
+                logEvent.Dispose();
+                logEvent = null;
+            }
         }
 
         public void RaiseCanExecuteChanged()
