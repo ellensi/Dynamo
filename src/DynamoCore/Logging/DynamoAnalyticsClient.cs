@@ -127,7 +127,7 @@ namespace Dynamo.Logging
         /// Starts the client when DynamoModel is created. This method initializes
         /// the Analytics service and application life cycle start is tracked.
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="dynamoModel"></param>
         public void Start(DynamoModel dynamoModel)
         {
             //Set the preferences, so that we can get live value of analytics 
@@ -186,21 +186,27 @@ namespace Dynamo.Logging
         {
             if (!ReportingAnalytics) return Disposable;
 
-            return new TimedEvent() { Category = category.ToString(), VariableName = variable, Description = description };
+            var e = new TimedEvent() { Category = category.ToString(), VariableName = variable, Description = description };
+            e.Track();
+            return e;
         }
 
         public IDisposable CreateCommandEvent(string name)
         {
             if (!ReportingAnalytics) return Disposable;
 
-            return new CommandEvent(name);
+            var e = new CommandEvent(name);
+            e.Track();
+            return e;
         }
 
         public IDisposable CreateFileOperationEvent(string filepath, Actions operation, int size)
         {
             if (!ReportingAnalytics) return Disposable;
 
-            return new FileOperationEvent() { FilePath = filepath, FileSize = size, FileAction = FileAction(operation) };
+            var e = new FileOperationEvent() { FilePath = filepath, FileSize = size, FileAction = FileAction(operation) };
+            e.Track();
+            return e;
         }
 
         private FileOperationEvent.Actions FileAction(Actions operation)

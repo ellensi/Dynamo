@@ -90,10 +90,7 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            var e = client.CreateTimedEvent(category, variable, description) as TimedEvent;
-
-            e.Track();
-            return e;
+            return client.CreateTimedEvent(category, variable, description);
         }
 
         /// <summary>
@@ -106,10 +103,7 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            var e = client.CreateCommandEvent(name) as CommandEvent;
-
-            e.Track();
-            return e;
+            return client.CreateCommandEvent(name);
         }
 
         /// <summary>
@@ -124,10 +118,7 @@ namespace Dynamo.Logging
         {
             if (!enabled) return DynamoAnalyticsClient.Disposable;
 
-            var e = client.CreateFileOperationEvent(filepath, operation, size) as FileOperationEvent;
-
-            e.Track();
-            return e;
+            return client.CreateFileOperationEvent(filepath, operation, size);
         }
 
         /// <summary>
