@@ -40,17 +40,17 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <Private>False</Private>
+      <HintPath>..\..\packages\IronPython.2.7.2\lib\Net40\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <Private>False</Private>
+      <HintPath>..\..\packages\IronPython.2.7.2\lib\Net40\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\..\..\extern\prism\Microsoft.Practices.Prism.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\extern\IronPython\Microsoft.Scripting.dll</HintPath>
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IronPython.2.7.2\lib\Net40\Microsoft.Scripting.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
@@ -137,6 +137,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -35,12 +35,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronPython">
-      <HintPath>..\..\..\extern\IronPython\IronPython.dll</HintPath>
+    <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IronPython.2.7.2\lib\Net40\IronPython.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\extern\IronPython\Microsoft.Dynamic.dll</HintPath>
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IronPython.2.7.2\lib\Net40\Microsoft.Dynamic.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
