@@ -9,11 +9,11 @@ using System.Text.RegularExpressions;
 using Dynamo.Configuration;
 using Dynamo.Engine.CodeGeneration;
 using Dynamo.Models;
-using System.Windows; 
+using System.Windows;
 using Dynamo.Graph;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Nodes.CustomNodes;
-using Dynamo.Graph.Workspaces; 
+using Dynamo.Graph.Workspaces;
 using Dynamo.Selection;
 using Dynamo.Wpf.ViewModels.Core;
 using DynCmd = Dynamo.ViewModels.DynamoViewModel;
@@ -36,6 +36,8 @@ namespace Dynamo.ViewModels
         #region events
         public event SnapInputEventHandler SnapInputEvent;
         #endregion
+
+        public Action OnMouseLeave;
 
         #region private members
 
@@ -489,6 +491,7 @@ namespace Dynamo.ViewModels
             IsNodeAddedRecently = true;
             DynamoSelection.Instance.Selection.CollectionChanged += SelectionOnCollectionChanged;
             ZIndex = ++StaticZIndex;
+            ++NoteViewModel.StaticZIndex;
         }
  
         public NodeViewModel(WorkspaceViewModel workspaceViewModel, NodeModel logic, Size preferredSize)
@@ -762,25 +765,6 @@ namespace Dynamo.ViewModels
             return nodeLogic.IsCustomFunction;
         }
 
-        //private void SetLayout(object parameters)
-        //{
-        //    var dict = parameters as Dictionary<string,
-        //    double>;
-        //    nodeLogic.X = dict["X"];
-        //    nodeLogic.Y = dict["Y"];
-        //    nodeLogic.Height = dict["Height"];
-        //    nodeLogic.Width = dict["Width"];
-        //}
-
-        //private bool CanSetLayout(object parameters)
-        //{
-        //    var dict = parameters as Dictionary<string,
-        //    double>;
-        //    if (dict == null)
-        //        return false;
-        //    return true;
-        //}
-
         private void inports_collectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             //The visual height of the node is bound to preferred height.
@@ -804,6 +788,14 @@ namespace Dynamo.ViewModels
                     PortViewModel portToRemove = UnSubscribePortEvents(InPorts.ToList().First(x => x.PortModel == item)); ;                   
                     InPorts.Remove(portToRemove);
                 }
+            }
+            else if(e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach(var p in InPorts)
+                {
+                    UnSubscribePortEvents(p);
+                }
+                InPorts.Clear();
             }
         }
 
@@ -830,6 +822,14 @@ namespace Dynamo.ViewModels
                     PortViewModel portToRemove = UnSubscribePortEvents(OutPorts.ToList().First(x => x.PortModel == item));
                     OutPorts.Remove(portToRemove);
                 }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var p in OutPorts)
+                {
+                    UnSubscribePortEvents(p);
+                }
+                OutPorts.Clear();
             }
         }
 
@@ -931,16 +931,6 @@ namespace Dynamo.ViewModels
         }
 
         private bool CanUpstreamVisibilityBeToggled(object parameter)
-        {
-            return true;
-        }
-
-        private void ValidateConnections(object parameter)
-        {
-            DynamoModel.OnRequestDispatcherBeginInvoke(nodeLogic.ValidateConnections);
-        }
-
-        private bool CanValidateConnections(object parameter)
         {
             return true;
         }

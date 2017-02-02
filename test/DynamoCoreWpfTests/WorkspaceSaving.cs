@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Dynamo.Graph;
 using Dynamo.Graph.Nodes.CustomNodes;
 using Dynamo.Graph.Nodes.ZeroTouch;
 using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
-using Dynamo.Nodes;
 using Dynamo.Search.SearchElements;
 using Dynamo.Wpf.ViewModels;
 
 using NUnit.Framework;
+using Dynamo.ViewModels;
 
 namespace Dynamo.Tests
 {
@@ -438,6 +437,71 @@ namespace Dynamo.Tests
                 lastSaveTime = saveTime;
             }
         }
+
+        [Test]
+        [Category("UnitTests")]
+        public void EnsureSaveDialogIsShownOnOpenIfSaveCommand()
+        {
+            //workspace has unsaved changes
+            this.GetModel().CurrentWorkspace.HasUnsavedChanges = true;
+            //openPath
+            string openPath = Path.Combine(TestDirectory, (@"UI\GroupTest.dyn"));
+            var eventCount = 0;
+
+            var handler = new WorkspaceSaveEventHandler((o,e) => { eventCount = eventCount + 1; });
+            //attach handler to the save request
+            ViewModel.RequestUserSaveWorkflow += handler;
+            //send the command
+            ViewModel.OpenIfSavedCommand.Execute(new Dynamo.Models.DynamoModel.OpenFileCommand(openPath));
+
+            //dispose handler
+            ViewModel.RequestUserSaveWorkflow -= handler;
+
+            //assert the request was made
+            Assert.AreEqual(1,eventCount);
+        }
+
+        [Test]
+        [Category("UnitTests")]
+        public void EnsureAskUserToSaveDialogIsShownOnOpenRecent()
+        {
+            //openPath
+            string openPath = Path.Combine(TestDirectory, (@"UI\GroupTest.dyn"));
+
+            //workspace has unsaved changes
+            this.GetModel().CurrentWorkspace.HasUnsavedChanges = true;
+
+            var eventCount = 0;
+
+            var handler = new WorkspaceSaveEventHandler((o, e) => { eventCount = eventCount + 1; });
+
+            //attach handler to the save request
+            ViewModel.RequestUserSaveWorkflow += handler;
+
+            //send the command
+            ViewModel.OpenRecentCommand.Execute(openPath);
+
+            //dispose handler
+            ViewModel.RequestUserSaveWorkflow -= handler;
+
+            //assert the request was made
+            Assert.AreEqual(1, eventCount);
+        }
+
+        [Test]
+        [Category("UnitTests")]
+        public void EnsureOnOpenIfSaveCommandOpensDynFile()
+        {
+            
+            //openPath
+            string openPath = Path.Combine(TestDirectory, (@"UI\GroupTest.dyn"));
+            //send the command
+            ViewModel.OpenIfSavedCommand.Execute(new Dynamo.Models.DynamoModel.OpenFileCommand(openPath));
+
+            Assert.GreaterOrEqual(2, GetModel().CurrentWorkspace.Nodes.ToList().Count());
+
+        }
+
 
         [Test]
         [Category("UnitTests")]
@@ -982,6 +1046,9 @@ namespace Dynamo.Tests
             var def = dynamoModel.CustomNodeManager.CreateCustomNode(nodeName, catName, "");
 
             var tempPath1 = Path.Combine(TempFolder, nodeName + ".dyf");
+            
+            // Create the folder first incase it does not exist
+            Directory.CreateDirectory(Path.Combine(TempFolder, nodeName, nodeName));
             var tempPath2 = Path.Combine(TempFolder, nodeName, nodeName + ".dyf");
 
             var res = def.SaveAs(tempPath1, ViewModel.Model.EngineController.LiveRunnerRuntimeCore);

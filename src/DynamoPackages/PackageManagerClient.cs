@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dynamo.Core;
-using Dynamo.Utilities;
-using Greg;
-using Greg.AuthProviders;
+﻿using Greg;
 using Greg.Requests;
 using Greg.Responses;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Dynamo.PackageManager
 {
@@ -18,7 +15,7 @@ namespace Dynamo.PackageManager
 
         // These were used early on in order to identify packages with binaries and python scripts
         // This is now a bona fide field in the DB so they are obsolete. 
-
+        // TODO: Try to update the old packages while migrating them to Forge Conetent API, so that this const check can be avoided.
         [Obsolete] internal static readonly string PackageContainsBinariesConstant =
             "|ContainsBinaries(5C698212-A139-4DDD-8657-1BF892C79821)";
 

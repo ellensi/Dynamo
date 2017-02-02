@@ -260,6 +260,19 @@ namespace DSCoreNodesTests
 
         [Test]
         [Category("UnitTests")]
+        public static void AllIndicesOf()
+        {
+            Assert.AreEqual(new int[] {}, String.AllIndicesOf("", ""));
+            Assert.AreEqual(new int[] { }, String.AllIndicesOf("a", ""));
+            Assert.AreEqual(new int[] { }, String.AllIndicesOf("abcdef", "g"));
+            Assert.AreEqual(new int[] { }, String.AllIndicesOf("abcdef", "F"));
+            Assert.AreEqual(new[] {5}, String.AllIndicesOf("abcdef", "F", true));
+            Assert.AreEqual(new[] {1, 4, 7, 10}, String.AllIndicesOf("mississippi", "i"));
+            Assert.AreEqual(new[] {1, 4}, String.AllIndicesOf("mississippi", "is"));
+        }
+
+        [Test]
+        [Category("UnitTests")]
         public static void LastIndexOf()
         {
             Assert.AreEqual(0, String.LastIndexOf("", ""));
@@ -345,7 +358,11 @@ namespace DSCoreNodesTests
             Assert.AreEqual("a", String.Remove("abcdef", 1));
             Assert.AreEqual("aef", String.Remove("abcdef", 1, 3));
             Assert.AreEqual("aef", String.Remove("abcdef", -5, 3));
-            Assert.AreEqual("aef", String.Remove("abcdef", -2, -3));
+            Assert.AreEqual("abf", String.Remove("abcdef", -2, -3));
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => String.Remove("abcdef", 0, 7)); // count out of range of available character in string
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => String.Remove("abcdef", 8, 1)); // startIndex out of range of available character in string
+            // Case of startIndex magnitude is out of range and the computation of startIndex + string.Length in the String.Remove function is negative.
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => String.Remove("abcdef", -7, 1)); 
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Dynamo.PackageManager.UI
             this.viewModel = viewModel;
             this.DataContext = viewModel;
             InitializeComponent();
+            Logging.Analytics.TrackScreenView("PackageManager");
         }
 
         private void BrowseOnline_OnClick(object sender, RoutedEventArgs e)
@@ -31,5 +32,9 @@ namespace Dynamo.PackageManager.UI
             button.ContextMenu.IsOpen = true;
         }
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            this.Owner.Focus();
+        }
     }
 }

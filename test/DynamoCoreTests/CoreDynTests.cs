@@ -1,13 +1,12 @@
-﻿using System.Collections;
+﻿using CoreNodeModels;
+using CoreNodeModels.Input;
+using Dynamo.Graph.Nodes;
+using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using CoreNodeModels;
-using CoreNodeModels.Input;
-using Dynamo.Graph.Nodes;
-using NUnit.Framework;
-
 using String = System.String;
 
 
@@ -236,6 +235,8 @@ namespace Dynamo.Tests
             RunModel(openPath);
 
             AssertPreviewValue("4a780dfb-74b1-453a-86ef-2f4a5c46792e", 0.0);
+            AssertPreviewValue("4839daee-5add-4686-a89d-dd36ec868993", 3);
+            AssertPreviewValue("2d1dd88e-6d47-48c5-9b79-560a6bf406ee", 3.0);
         }
 
         [Test]
@@ -399,6 +400,15 @@ namespace Dynamo.Tests
             {
                 Assert.IsTrue(e is System.Xml.XmlException);
             }
+        }
+
+        [Test]
+        public void CanOpenGoodFileWithoutExtension()
+        {
+            var examplePath = Path.Combine(TestDirectory, @"core\files");
+            string openPath = Path.Combine(examplePath, "Sphere");
+            OpenModel(openPath);
+            BeginRun();
         }
 
         [Test]
@@ -587,6 +597,15 @@ namespace Dynamo.Tests
             RunModel(Path.Combine(TestDirectory, @"core\number\TestNumber_RangeExpr04.dyn"));
 
             AssertPreviewValue("e9ad17aa-e30f-4fcb-9d43-71ec2ab027f4", new[] { 5, 4, 3, 2, 1 });
+        }
+
+        [Test]
+        public void TestBigNumber()
+        {
+            RunModel(Path.Combine(TestDirectory, @"core\number\TestBigNumber.dyn"));
+            long value = 6640000000;
+            AssertPreviewValue("b64d00bd-695b-496f-91e2-45caadd56535", value);
+            AssertPreviewValue("8540896e-90c8-45aa-a1b3-b2d93d98668d", value);
         }
     }
 }

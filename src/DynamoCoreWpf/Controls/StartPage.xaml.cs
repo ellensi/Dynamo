@@ -185,6 +185,12 @@ namespace Dynamo.UI.Controls
                 ClickAction = StartPageListItem.Action.ExternalUrl
             });
 
+            references.Add(new StartPageListItem(Resources.StartPageDynamoDictionary, "icon-dictionary.png")
+            {
+                ContextData = Configurations.DynamoDictionary,
+                ClickAction = StartPageListItem.Action.ExternalUrl
+            });
+            
             #endregion
 
             #region Contribution Links
@@ -369,12 +375,16 @@ namespace Dynamo.UI.Controls
             foreach (var filePath in filePaths)
             {
                 var extension = Path.GetExtension(filePath).ToUpper();
+                // If not extension specified and code reach here, this means this is still a valid file 
+                // only without file type. Otherwise, simply take extension substring skipping the 'dot'.
+                var subScript = extension.IndexOf(".") == 0 ? extension.Substring(1) : "";
                 var caption = Path.GetFileNameWithoutExtension(filePath);
+
                 files.Add(new StartPageListItem(caption)
                 {
                     ContextData = filePath,
                     ToolTip = filePath,
-                    SubScript = extension.Substring(1), // Skipping the 'dot'
+                    SubScript = subScript,
                     ClickAction = StartPageListItem.Action.FilePath
                 });
             }

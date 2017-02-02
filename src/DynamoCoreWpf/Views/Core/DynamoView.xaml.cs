@@ -1,16 +1,10 @@
-using System;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Diagnostics;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
+using Dynamo.Configuration;
 using Dynamo.Core;
+using Dynamo.Graph.Nodes;
+using Dynamo.Graph.Notes;
+using Dynamo.Graph.Presets;
+using Dynamo.Graph.Workspaces;
+using Dynamo.Logging;
 using Dynamo.Models;
 using Dynamo.Nodes;
 using Dynamo.Nodes.Prompts;
@@ -18,33 +12,38 @@ using Dynamo.PackageManager;
 using Dynamo.PackageManager.UI;
 using Dynamo.Search;
 using Dynamo.Selection;
+using Dynamo.Services;
+using Dynamo.UI.Controls;
 using Dynamo.Utilities;
 using Dynamo.ViewModels;
+using Dynamo.Views;
 using Dynamo.Wpf;
 using Dynamo.Wpf.Authentication;
 using Dynamo.Wpf.Controls;
-
-using String = System.String;
-using System.Windows.Data;
-using Dynamo.UI.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using Dynamo.Configuration;
-using Dynamo.Graph.Nodes;
-using Dynamo.Graph.Notes;
-using Dynamo.Graph.Presets;
-using Dynamo.Graph.Workspaces;
-using Dynamo.Services;
+using Dynamo.Wpf.Extensions;
 using Dynamo.Wpf.Utilities;
-using Dynamo.Logging;
-
-using ResourceNames = Dynamo.Wpf.Interfaces.ResourceNames;
 using Dynamo.Wpf.ViewModels.Core;
 using Dynamo.Wpf.Views.Gallery;
-using Dynamo.Wpf.Extensions;
 using Dynamo.Wpf.Views.PackageManager;
-using Dynamo.Views;
+using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using HelixToolkit.Wpf.SharpDX;
+using ResourceNames = Dynamo.Wpf.Interfaces.ResourceNames;
+using String = System.String;
 
 namespace Dynamo.Controls
 {
@@ -66,6 +65,7 @@ namespace Dynamo.Controls
         private GalleryView galleryView;
         private readonly LoginService loginService;
         internal ViewExtensionManager viewExtensionManager = new ViewExtensionManager();
+        private ShortcutToolbar shortcutBar;
 
         // This is to identify whether the PerformShutdownSequenceOnViewModel() method has been
         // called on the view model and the process is not cancelled
@@ -290,7 +290,7 @@ namespace Dynamo.Controls
 
         #endregion
 
-        bool CheckVirtualScreenSize()
+        private bool CheckVirtualScreenSize()
         {
             var w = SystemParameters.VirtualScreenWidth;
             var h = SystemParameters.VirtualScreenHeight;
@@ -317,19 +317,19 @@ namespace Dynamo.Controls
             return true;
         }
 
-        void DynamoView_LocationChanged(object sender, EventArgs e)
+        private void DynamoView_LocationChanged(object sender, EventArgs e)
         {
             dynamoViewModel.Model.PreferenceSettings.WindowX = Left;
             dynamoViewModel.Model.PreferenceSettings.WindowY = Top;
         }
 
-        void DynamoView_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void DynamoView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             dynamoViewModel.Model.PreferenceSettings.WindowW = e.NewSize.Width;
             dynamoViewModel.Model.PreferenceSettings.WindowH = e.NewSize.Height;
         }
 
-        void InitializeLogin()
+        private void InitializeLogin()
         {
             if ( dynamoViewModel.ShowLogin && dynamoViewModel.Model.AuthenticationManager.HasAuthProvider)
             {
@@ -338,76 +338,75 @@ namespace Dynamo.Controls
             }
         }
 
-        void InitializeShortcutBar()
+        private void InitializeShortcutBar()
         {
-            ShortcutToolbar shortcutBar = new ShortcutToolbar(this.dynamoViewModel.Model.UpdateManager);
-            shortcutBar.Name = "ShortcutToolbar";
+            shortcutBar = new ShortcutToolbar(this.dynamoViewModel.Model.UpdateManager) {Name = "ShortcutToolbar"};
 
-            ShortcutBarItem newScriptButton = new ShortcutBarItem();
-            newScriptButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarNewButtonTooltip;
-            newScriptButton.ShortcutCommand = dynamoViewModel.NewHomeWorkspaceCommand;
-            newScriptButton.ShortcutCommandParameter = null;
-            newScriptButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/new_normal.png";
-            newScriptButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/new_disabled.png";
-            newScriptButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/new_hover.png";
+            var newScriptButton = new ShortcutBarItem
+            {
+                ShortcutToolTip = Wpf.Properties.Resources.DynamoViewToolbarNewButtonTooltip,
+                ShortcutCommand = dynamoViewModel.NewHomeWorkspaceCommand,
+                ShortcutCommandParameter = null,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/new_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/new_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/new_hover.png"
+            };
 
-            ShortcutBarItem openScriptButton = new ShortcutBarItem();
-            openScriptButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarOpenButtonTooltip;
-            openScriptButton.ShortcutCommand = dynamoViewModel.ShowOpenDialogAndOpenResultCommand;
-            openScriptButton.ShortcutCommandParameter = null;
-            openScriptButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/open_normal.png";
-            openScriptButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/open_disabled.png";
-            openScriptButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/open_hover.png";
+            var openScriptButton = new ShortcutBarItem
+            {
+                ShortcutToolTip = Wpf.Properties.Resources.DynamoViewToolbarOpenButtonTooltip,
+                ShortcutCommand = dynamoViewModel.ShowOpenDialogAndOpenResultCommand,
+                ShortcutCommandParameter = null,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/open_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/open_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/open_hover.png"
+            };
 
-            ShortcutBarItem saveButton = new ShortcutBarItem();
-            saveButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarSaveButtonTooltip;
-            saveButton.ShortcutCommand = dynamoViewModel.ShowSaveDialogIfNeededAndSaveResultCommand;
-            saveButton.ShortcutCommandParameter = null;
-            saveButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/save_normal.png";
-            saveButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/save_disabled.png";
-            saveButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/save_hover.png";
+            var saveButton = new ShortcutBarItem
+            {
+                ShortcutToolTip = Wpf.Properties.Resources.DynamoViewToolbarSaveButtonTooltip,
+                ShortcutCommand = dynamoViewModel.ShowSaveDialogIfNeededAndSaveResultCommand,
+                ShortcutCommandParameter = null,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/save_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/save_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/save_hover.png"
+            };
 
-            ShortcutBarItem screenShotButton = new ShortcutBarItem();
-            screenShotButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarExportButtonTooltip;
-            screenShotButton.ShortcutCommand = dynamoViewModel.ShowSaveImageDialogAndSaveResultCommand;
-            screenShotButton.ShortcutCommandParameter = null;
-            screenShotButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/screenshot_normal.png";
-            screenShotButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/screenshot_disabled.png";
-            screenShotButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/screenshot_hover.png";
+            var screenShotButton = new ImageExportShortcutBarItem(dynamoViewModel)
+            {
+                ShortcutCommand = dynamoViewModel.ShowSaveImageDialogAndSaveResultCommand,
+                ShortcutCommandParameter = Wpf.Properties.Resources.ScreenShotFrom3DShortcutParameter,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/screenshot_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/screenshot_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/screenshot_hover.png"
+            };
 
-            ShortcutBarItem undoButton = new ShortcutBarItem();
-            undoButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarUndoButtonTooltip;
-            undoButton.ShortcutCommand = dynamoViewModel.UndoCommand;
-            undoButton.ShortcutCommandParameter = null;
-            undoButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/undo_normal.png";
-            undoButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/undo_disabled.png";
-            undoButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/undo_hover.png";
+            var undoButton = new ShortcutBarItem
+            {
+                ShortcutToolTip = Wpf.Properties.Resources.DynamoViewToolbarUndoButtonTooltip,
+                ShortcutCommand = dynamoViewModel.UndoCommand,
+                ShortcutCommandParameter = null,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/undo_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/undo_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/undo_hover.png"
+            };
 
-            ShortcutBarItem redoButton = new ShortcutBarItem();
-            redoButton.ShortcutToolTip = Dynamo.Wpf.Properties.Resources.DynamoViewToolbarRedoButtonTooltip;
-            redoButton.ShortcutCommand = dynamoViewModel.RedoCommand;
-            redoButton.ShortcutCommandParameter = null;
-            redoButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/redo_normal.png";
-            redoButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/redo_disabled.png";
-            redoButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/redo_hover.png";
-
-            // PLACEHOLDER FOR FUTURE SHORTCUTS
-            //ShortcutBarItem runButton = new ShortcutBarItem();
-            //runButton.ShortcutToolTip = "Run [Ctrl + R]";
-            ////runButton.ShortcutCommand = viewModel.RunExpressionCommand; // Function implementation in progress
-            //runButton.ShortcutCommandParameter = null;
-            //runButton.ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/run_normal.png";
-            //runButton.ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/run_disabled.png";
-            //runButton.ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/run_hover.png";
+            var redoButton = new ShortcutBarItem
+            {
+                ShortcutToolTip = Wpf.Properties.Resources.DynamoViewToolbarRedoButtonTooltip,
+                ShortcutCommand = dynamoViewModel.RedoCommand,
+                ShortcutCommandParameter = null,
+                ImgNormalSource = "/DynamoCoreWpf;component/UI/Images/redo_normal.png",
+                ImgDisabledSource = "/DynamoCoreWpf;component/UI/Images/redo_disabled.png",
+                ImgHoverSource = "/DynamoCoreWpf;component/UI/Images/redo_hover.png"
+            };
 
             shortcutBar.ShortcutBarItems.Add(newScriptButton);
             shortcutBar.ShortcutBarItems.Add(openScriptButton);
             shortcutBar.ShortcutBarItems.Add(saveButton);
             shortcutBar.ShortcutBarItems.Add(undoButton);
             shortcutBar.ShortcutBarItems.Add(redoButton);
-            //shortcutBar.ShortcutBarItems.Add(runButton);            
 
-            //shortcutBar.ShortcutBarRightSideItems.Add(updateButton);
             shortcutBar.ShortcutBarRightSideItems.Add(screenShotButton);
 
             shortcutBarGrid.Children.Add(shortcutBar);
@@ -444,12 +443,12 @@ namespace Dynamo.Controls
             }
         }
 
-        void vm_RequestLayoutUpdate(object sender, EventArgs e)
+        private void vm_RequestLayoutUpdate(object sender, EventArgs e)
         {
             Dispatcher.Invoke(new Action(UpdateLayout), DispatcherPriority.Render, null);
         }
 
-        void DynamoViewModelRequestViewOperation(ViewOperationEventArgs e)
+        private void DynamoViewModelRequestViewOperation(ViewOperationEventArgs e)
         {
             if (dynamoViewModel.BackgroundPreviewViewModel.CanNavigateBackground == false)
                 return;
@@ -519,6 +518,7 @@ namespace Dynamo.Controls
             dynamoViewModel.RequestManagePackagesDialog += DynamoViewModelRequestShowInstalledPackages;
             dynamoViewModel.RequestPackageManagerSearchDialog += DynamoViewModelRequestShowPackageManagerSearch;
             dynamoViewModel.RequestPackagePathsDialog += DynamoViewModelRequestPackagePaths;
+            dynamoViewModel.RequestScaleFactorDialog += DynamoViewModelChangeScaleFactor;
 
             #endregion
 
@@ -539,6 +539,7 @@ namespace Dynamo.Controls
 
             dynamoViewModel.RequestClose += DynamoViewModelRequestClose;
             dynamoViewModel.RequestSaveImage += DynamoViewModelRequestSaveImage;
+            dynamoViewModel.RequestSave3DImage += DynamoViewModelRequestSave3DImage;
             dynamoViewModel.SidebarClosed += DynamoViewModelSidebarClosed;
 
             dynamoViewModel.Model.RequestsCrashPrompt += Controller_RequestsCrashPrompt;
@@ -588,6 +589,40 @@ namespace Dynamo.Controls
                 Converter = new BooleanToVisibilityConverter()
             };
             BackgroundPreview.SetBinding(VisibilityProperty, vizBinding);
+            TrackStartupAnalytics();
+
+            // In native host scenario (e.g. Revit), the "Application.Current" will be "null". Therefore, the InCanvasSearchControl.OnRequestShowInCanvasSearch
+            // will not work. Instead, we have to check if the Owner Window (DynamoView) is deactivated or not.  
+            if (Application.Current == null)
+            {
+                this.Deactivated += (s, args) => { HidePopupWhenWindowDeactivated(); };
+            }
+        }
+
+        /// <summary>
+        /// Close Popup when the Dynamo window is not in the foreground.
+        /// </summary>
+
+        private void HidePopupWhenWindowDeactivated()
+        {
+            var workspace = this.ChildOfType<WorkspaceView>();
+            if(workspace != null)
+                workspace.HidePopUp();
+         }
+
+        private void TrackStartupAnalytics()
+        {
+            if (!Analytics.ReportingAnalytics) return;
+
+            string packages = string.Empty;
+            var pkgExtension = dynamoViewModel.Model.GetPackageManagerExtension();
+            if(pkgExtension != null)
+            {
+                packages = pkgExtension.PackageLoader.LocalPackages
+                    .Select(p => string.Format("{0} {1}", p.Name, p.VersionName))
+                    .Aggregate(String.Empty, (x, y) => string.Format("{0}, {1}", x, y));
+            }
+            Analytics.TrackTimedEvent(Categories.Performance, "ViewStartup", dynamoViewModel.Model.stopwatch.Elapsed, packages);
         }
 
         /// <summary>
@@ -599,7 +634,7 @@ namespace Dynamo.Controls
         /// is accepted by the user, or false otherwise. If this method returns 
         /// false, then download of package should be terminated.</returns>
         /// 
-        bool DisplayTermsOfUseForAcceptance()
+        private bool DisplayTermsOfUseForAcceptance()
         {
             var prefSettings = dynamoViewModel.Model.PreferenceSettings;
             if (prefSettings.PackageDownloadTouAccepted)
@@ -612,12 +647,12 @@ namespace Dynamo.Controls
             return prefSettings.PackageDownloadTouAccepted;
         }
 
-        void DynamoView_Unloaded(object sender, RoutedEventArgs e)
+        private void DynamoView_Unloaded(object sender, RoutedEventArgs e)
         {
             UnsubscribeNodeViewCustomizationEvents();
         }
 
-        void DynamoViewModelRequestAboutWindow(DynamoViewModel model)
+        private void DynamoViewModelRequestAboutWindow(DynamoViewModel model)
         {
             var aboutWindow = model.BrandingResourceProvider.CreateAboutBox(model);
             aboutWindow.Owner = this;
@@ -631,7 +666,7 @@ namespace Dynamo.Controls
             e.Handled = true;
         }
 
-        void DynamoViewModelRequestShowHideGallery(bool showGallery)
+        private void DynamoViewModelRequestShowHideGallery(bool showGallery)
         {
             if (showGallery)
             {
@@ -663,8 +698,10 @@ namespace Dynamo.Controls
         }
 
         private PublishPackageView _pubPkgView;
-        void DynamoViewModelRequestRequestPackageManagerPublish(PublishPackageViewModel model)
+
+        private void DynamoViewModelRequestRequestPackageManagerPublish(PublishPackageViewModel model)
         {
+            var cmd = Analytics.TrackCommandEvent("PublishPackage");
             if (_pubPkgView == null)
             {
                 _pubPkgView = new PublishPackageView(model)
@@ -672,7 +709,7 @@ namespace Dynamo.Controls
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
-                _pubPkgView.Closed += (sender, args) => _pubPkgView = null;
+                _pubPkgView.Closed += (sender, args) => { _pubPkgView = null; cmd.Dispose(); };
                 _pubPkgView.Show();
 
                 if (_pubPkgView.IsLoaded && IsLoaded) _pubPkgView.Owner = this;
@@ -683,11 +720,13 @@ namespace Dynamo.Controls
 
         private PackageManagerSearchView _searchPkgsView;
         private PackageManagerSearchViewModel _pkgSearchVM;
-        void DynamoViewModelRequestShowPackageManagerSearch(object s, EventArgs e)
+
+        private void DynamoViewModelRequestShowPackageManagerSearch(object s, EventArgs e)
         {
             if (!DisplayTermsOfUseForAcceptance())
                 return; // Terms of use not accepted.
 
+            var cmd = Analytics.TrackCommandEvent("SearchPackage");
             if (_pkgSearchVM == null)
             {
                 _pkgSearchVM = new PackageManagerSearchViewModel(dynamoViewModel.PackageManagerClientViewModel);
@@ -701,7 +740,7 @@ namespace Dynamo.Controls
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
-                _searchPkgsView.Closed += (sender, args) => _searchPkgsView = null;
+                _searchPkgsView.Closed += (sender, args) => { _searchPkgsView = null; cmd.Dispose(); };
                 _searchPkgsView.Show();
 
                 if (_searchPkgsView.IsLoaded && IsLoaded) _searchPkgsView.Owner = this;
@@ -713,14 +752,37 @@ namespace Dynamo.Controls
 
         private void DynamoViewModelRequestPackagePaths(object sender, EventArgs e)
         {
-            var viewModel = new PackagePathViewModel(dynamoViewModel.PreferenceSettings);
+            var loadPackagesParams = new LoadPackageParams {
+                Preferences = dynamoViewModel.PreferenceSettings,
+                PathManager = dynamoViewModel.Model.PathManager,
+            };
+            var customNodeManager = dynamoViewModel.Model.CustomNodeManager;
+            var packageLoader = dynamoViewModel.Model.GetPackageManagerExtension().PackageLoader;
+            var viewModel = new PackagePathViewModel(packageLoader,loadPackagesParams,customNodeManager);
             var view = new PackagePathView(viewModel) { Owner = this };
             view.ShowDialog();
         }
 
-        private InstalledPackagesView _installedPkgsView;
-        void DynamoViewModelRequestShowInstalledPackages(object s, EventArgs e)
+        private void DynamoViewModelChangeScaleFactor(object sender, EventArgs e)
         {
+            var view = new Prompts.ChangeScaleFactorPrompt(dynamoViewModel.ScaleFactorLog) { Owner = this };
+            if (view.ShowDialog() == true)
+            {
+                if (dynamoViewModel.ScaleFactorLog != view.SliderValue)
+                {
+                    dynamoViewModel.ScaleFactorLog = view.SliderValue;
+                    dynamoViewModel.CurrentSpace.HasUnsavedChanges = true;
+
+                    dynamoViewModel.ExecuteCommand(new DynamoModel.ForceRunCancelCommand(false, false));
+                }
+            }
+        }
+
+        private InstalledPackagesView _installedPkgsView;
+
+        private void DynamoViewModelRequestShowInstalledPackages(object s, EventArgs e)
+        {
+            var cmd = Analytics.TrackCommandEvent("ManagePackage");
             if (_installedPkgsView == null)
             {
                 var pmExtension = dynamoViewModel.Model.GetPackageManagerExtension();
@@ -731,7 +793,7 @@ namespace Dynamo.Controls
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
-                _installedPkgsView.Closed += (sender, args) => _installedPkgsView = null;
+                _installedPkgsView.Closed += (sender, args) => { _installedPkgsView = null; cmd.Dispose(); };
                 _installedPkgsView.Show();
 
                 if (_installedPkgsView.IsLoaded && IsLoaded) _installedPkgsView.Owner = this;
@@ -739,39 +801,51 @@ namespace Dynamo.Controls
             _installedPkgsView.Focus();
         }
 
-        void ClipBoard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void ClipBoard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             dynamoViewModel.CopyCommand.RaiseCanExecuteChanged();
             dynamoViewModel.PasteCommand.RaiseCanExecuteChanged();
         }
 
-        void DynamoViewModelRequestUserSaveWorkflow(object sender, WorkspaceSaveEventArgs e)
+        private void DynamoViewModelRequestUserSaveWorkflow(object sender, WorkspaceSaveEventArgs e)
         {
             var dialogText = "";
-            if (e.Workspace is CustomNodeWorkspaceModel)
+            // If the file is read only, display a different message.
+            if (e.Workspace.IsReadOnly)
             {
-                dialogText = String.Format(Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveCustomNode, e.Workspace.Name);
+                dialogText = String.Format(Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveReadOnlyCustomNode, e.Workspace.FileName);
             }
-            else // homeworkspace
+            else
             {
-                if (string.IsNullOrEmpty(e.Workspace.FileName))
+                if (e.Workspace is CustomNodeWorkspaceModel)
                 {
-                    dialogText = Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveHomeWorkSpace;
+                    dialogText = String.Format(Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveCustomNode, e.Workspace.Name);
                 }
-                else
+                else // home workspace
                 {
-                    dialogText = String.Format(Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveNamedHomeWorkSpace, Path.GetFileName(e.Workspace.FileName));
+                    if (string.IsNullOrEmpty(e.Workspace.FileName))
+                    {
+                        dialogText = Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveHomeWorkSpace;
+                    }
+                    else
+                    {
+                        dialogText = String.Format(Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveNamedHomeWorkSpace, Path.GetFileName(e.Workspace.FileName));
+                    }
                 }
             }
 
             var buttons = e.AllowCancel ? MessageBoxButton.YesNoCancel : MessageBoxButton.YesNo;
-            var result = System.Windows.MessageBox.Show(dialogText,
+            var result = System.Windows.MessageBox.Show(this  ,dialogText,
                 Dynamo.Wpf.Properties.Resources.SaveConfirmationMessageBoxTitle,
                 buttons, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
-                e.Success = dynamoViewModel.ShowSaveDialogIfNeededAndSave(e.Workspace);
+                // If the file is read-only, redirect yes to save-as.
+                if (e.Workspace.IsReadOnly)
+                    dynamoViewModel.ShowSaveDialogAndSaveResult(e.Workspace);
+                else
+                    e.Success = dynamoViewModel.ShowSaveDialogIfNeededAndSave(e.Workspace);
             }
             else if (result == MessageBoxResult.Cancel)
             {
@@ -784,107 +858,59 @@ namespace Dynamo.Controls
             }
         }
 
-        void Selection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Selection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             dynamoViewModel.CopyCommand.RaiseCanExecuteChanged();
             dynamoViewModel.PasteCommand.RaiseCanExecuteChanged();
             dynamoViewModel.NodeFromSelectionCommand.RaiseCanExecuteChanged();           
         }
 
-        void Controller_RequestsCrashPrompt(object sender, CrashPromptArgs args)
+        private void Controller_RequestsCrashPrompt(object sender, CrashPromptArgs args)
         {
             var prompt = new CrashPrompt(args, dynamoViewModel);
             prompt.ShowDialog();
         }
 
-        void Controller_RequestTaskDialog(object sender, TaskDialogEventArgs e)
+        private void Controller_RequestTaskDialog(object sender, TaskDialogEventArgs e)
         {
             var taskDialog = new UI.Prompts.GenericTaskDialog(e);
             taskDialog.ShowDialog();
         }
 
-        void DynamoViewModelRequestSaveImage(object sender, ImageSaveEventArgs e)
+        private void DynamoViewModelRequestSaveImage(object sender, ImageSaveEventArgs e)
         {
-            if (string.IsNullOrEmpty(e.Path))
-                return;
+            var workspace = this.ChildOfType<WorkspaceView>();
+            workspace.SaveWorkspaceAsImage(e.Path);
+        }
 
-            var workspace = dynamoViewModel.Model.CurrentWorkspace;
-            if (workspace == null)
-                return;
+        private void DynamoViewModelRequestSave3DImage(object sender, ImageSaveEventArgs e)
+        {
+            var canvas = (DPFCanvas)BackgroundPreview.View.RenderHost;
 
-            if (!workspace.Nodes.Any() && (!workspace.Notes.Any()))
-                return; // An empty graph.
+            var encoder = new PngBitmapEncoder();
+            var rtBitmap = new RenderTargetBitmap((int)canvas.ActualWidth, (int)canvas.ActualHeight, 96, 96,
+                PixelFormats.Pbgra32);
+            rtBitmap.Render(canvas);
 
-            var initialized = false;
-            var bounds = new Rect();
+            encoder.Frames.Add(BitmapFrame.Create(rtBitmap));
 
-            var dragCanvas = WpfUtilities.ChildOfType<DragCanvas>(this);
-            var childrenCount = VisualTreeHelper.GetChildrenCount(dragCanvas);
-            for (int index = 0; index < childrenCount; ++index)
+            if (File.Exists(e.Path))
             {
-                var child = VisualTreeHelper.GetChild(dragCanvas, index);
-                var firstChild = VisualTreeHelper.GetChild(child, 0);
-                if ((!(firstChild is NodeView)) && (!(firstChild is NoteView)))
-                    continue;
-
-                var childBounds = VisualTreeHelper.GetDescendantBounds(child as Visual);
-                childBounds.X = (double)(child as Visual).GetValue(Canvas.LeftProperty);
-                childBounds.Y = (double)(child as Visual).GetValue(Canvas.TopProperty);
-
-                if (initialized)
-                    bounds.Union(childBounds);
-                else
-                {
-                    initialized = true;
-                    bounds = childBounds;
-                }
+                File.Delete(e.Path);
             }
 
-            // Add padding to the edge and make them multiples of two.
-            bounds.Width = (((int)Math.Ceiling(bounds.Width)) + 1) & ~0x01;
-            bounds.Height = (((int)Math.Ceiling(bounds.Height)) + 1) & ~0x01;
-
-            var drawingVisual = new DrawingVisual();
-            using (var drawingContext = drawingVisual.RenderOpen())
+            using (var stream = File.Create(e.Path))
             {
-                var targetRect = new Rect(0, 0, bounds.Width, bounds.Height);
-                var visualBrush = new VisualBrush(dragCanvas);
-                drawingContext.DrawRectangle(visualBrush, null, targetRect);
-
-                // drawingContext.DrawRectangle(null, new Pen(Brushes.Blue, 1.0), childBounds);
-            }
-
-            // var m = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice;
-            // region.Scale(m.M11, m.M22);
-
-            var rtb = new RenderTargetBitmap(((int)bounds.Width),
-                ((int)bounds.Height), 96, 96, PixelFormats.Default);
-
-            rtb.Render(drawingVisual);
-
-            //endcode as PNG
-            var pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
-
-            try
-            {
-                using (var stm = File.Create(e.Path))
-                {
-                    pngEncoder.Save(stm);
-                }
-            }
-            catch
-            {
-                dynamoViewModel.Model.Logger.Log(Wpf.Properties.Resources.MessageFailedToSaveAsImage);
+                encoder.Save(stream);
             }
         }
 
-        void DynamoViewModelRequestClose(object sender, EventArgs e)
+        private void DynamoViewModelRequestClose(object sender, EventArgs e)
         {
             Close();
         }
 
-        void DynamoViewModelSidebarClosed(object sender, EventArgs e)
+        private void DynamoViewModelSidebarClosed(object sender, EventArgs e)
         {
             LibraryClicked(sender, e);
         }
@@ -894,7 +920,7 @@ namespace Dynamo.Controls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void DynamoViewModelRequestsFunctionNamePrompt(object sender, FunctionNamePromptEventArgs e)
+        private void DynamoViewModelRequestsFunctionNamePrompt(object sender, FunctionNamePromptEventArgs e)
         {
             ShowNewFunctionDialog(e);
         }
@@ -956,12 +982,12 @@ namespace Dynamo.Controls
         /// </summary>
         /// <param name="e">a parameter object contains default Name and Description,
         /// and Success bool returned from the dialog</param>
-        void DynamoViewModelRequestPresetNamePrompt (PresetsNamePromptEventArgs e)
+        private void DynamoViewModelRequestPresetNamePrompt (PresetsNamePromptEventArgs e)
         {
             ShowNewPresetDialog(e);
         }
 
-        void DynamoViewModelRequestPresetWarningPrompt()
+        private void DynamoViewModelRequestPresetWarningPrompt()
         {
             ShowPresetWarning();
         }
@@ -1130,7 +1156,7 @@ namespace Dynamo.Controls
         // the key press event is being intercepted before it can get to
         // the active workspace. This code simply grabs the key presses and
         // passes it to thecurrent workspace
-        void DynamoView_KeyDown(object sender, KeyEventArgs e)
+        private void DynamoView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Escape || !IsMouseOver) return;
 
@@ -1161,7 +1187,7 @@ namespace Dynamo.Controls
             e.Handled = true;
         }
 
-        void DynamoView_KeyUp(object sender, KeyEventArgs e)
+        private void DynamoView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Escape) return;
 
@@ -1629,7 +1655,7 @@ namespace Dynamo.Controls
             _workspaceResizeTimer.Start();
         }
 
-        void _resizeTimer_Tick(object sender, EventArgs e)
+        private void _resizeTimer_Tick(object sender, EventArgs e)
         {
             _workspaceResizeTimer.IsEnabled = false;
 
@@ -1692,6 +1718,11 @@ namespace Dynamo.Controls
         private void Log(string message)
         {
             Log(LogMessage.Info(message));
+        }
+
+        private void Window_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            HidePopupWhenWindowDeactivated();
         }
 
         public void Dispose()

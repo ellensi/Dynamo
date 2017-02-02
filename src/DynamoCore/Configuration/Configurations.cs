@@ -75,6 +75,11 @@ namespace Dynamo.Configuration
         public static string DynamoVideoTutorials = "http://dynamobim.org/learn/#161";
 
         /// <summary>
+        /// Link to Dynamo dictionary
+        /// </summary>
+        public static string DynamoDictionary = "http://dictionary.dynamobim.com/";
+
+        /// <summary>
         /// Link to Dynamo primer
         /// </summary>
         public static string DynamoPrimer = "http://dynamoprimer.com/";
@@ -124,7 +129,7 @@ namespace Dynamo.Configuration
         /// <summary>
         /// Default width of tab
         /// </summary>
-        public static readonly int TabDefaultWidth = 200;
+        public static readonly int TabDefaultWidth = 250;
         #endregion
 
         #region Information Bubble
@@ -250,6 +255,7 @@ namespace Dynamo.Configuration
         internal static readonly string NodeTraceDataXmlTag = "NodeTraceData";
         internal static readonly string CallsiteTraceDataXmlTag = "CallsiteTraceData";
         internal static readonly string NodeIdAttribName = "NodeId";
+        internal static readonly string CallSiteID = "CallSiteID";
 
         #endregion
 

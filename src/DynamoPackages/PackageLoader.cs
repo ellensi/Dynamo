@@ -8,6 +8,7 @@ using Dynamo.Logging;
 using Dynamo.Utilities;
 using DynamoPackages.Properties;
 using DynamoUtilities;
+using Dynamo.Core;
 
 namespace Dynamo.PackageManager
 {
@@ -171,7 +172,11 @@ namespace Dynamo.PackageManager
             {
                 foreach (var pkg in LocalPackages)
                 {
-                    pathManager.AddResolutionPath(pkg.BinaryDirectory);
+                    if (File.Exists(pkg.BinaryDirectory))
+                    {
+                        pathManager.AddResolutionPath(pkg.BinaryDirectory);
+                    } 
+                    
                 }
             }
 
@@ -179,6 +184,17 @@ namespace Dynamo.PackageManager
             {
                 Load(pkg);
             }
+        }
+        public void LoadCustomNodesAndPackages(LoadPackageParams loadPackageParams, CustomNodeManager customNodeManager)
+        {
+            foreach(var path in loadPackageParams.Preferences.CustomPackageFolders){
+                customNodeManager.AddUninitializedCustomNodesInPath(path, false, false);
+                if (!this.packagesDirectories.Contains(path))
+                {
+                    this.packagesDirectories.Add(path);
+                }
+            }
+            LoadAll(loadPackageParams);
         }
 
         private void ScanAllPackageDirectories(IPreferences preferences)
@@ -191,19 +207,25 @@ namespace Dynamo.PackageManager
 
         private void ScanPackageDirectories(string root, IPreferences preferences)
         {
-            if (!Directory.Exists(root))
+            try
             {
-                this.Log(string.Format(Resources.InvalidPackageFolderWarning, root));
-                return;
-            }
+                if (!Directory.Exists(root))
+                {
+                    this.Log(string.Format(Resources.InvalidPackageFolderWarning, root));
+                    return;
+                }
 
-            foreach (var dir in
-                Directory.EnumerateDirectories(root, "*", SearchOption.TopDirectoryOnly))
-            {
-                var pkg = ScanPackageDirectory(dir);
-                if (pkg != null && preferences.PackageDirectoriesToUninstall.Contains(dir)) 
-                    pkg.MarkForUninstall(preferences);
+                foreach (var dir in
+                    Directory.EnumerateDirectories(root, "*", SearchOption.TopDirectoryOnly))
+                {
+                    var pkg = ScanPackageDirectory(dir);
+                    if (pkg != null && preferences.PackageDirectoriesToUninstall.Contains(dir))
+                        pkg.MarkForUninstall(preferences);
+                }
             }
+            catch (UnauthorizedAccessException ex) { }
+            catch (IOException ex) { }
+            catch (ArgumentException ex) { }
         }
 
         public Package ScanPackageDirectory(string directory)

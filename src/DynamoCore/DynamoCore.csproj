@@ -72,12 +72,14 @@ limitations under the License.
     <DefineConstants>$(DefineConstants);USE_DSENGINE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSharpAnalytics.WinForms, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\extern\CSharpAnalytics\CSharpAnalytics.WinForms.dll</HintPath>
+    <Reference Include="Analytics.NET.Core">
+      <HintPath>..\..\extern\Analytics.NET\Analytics.NET.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Greg, Version=1.0.5959.26179, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Greg.1.0.5959.26179\lib\net45\Greg.dll</HintPath>
+    <Reference Include="Analytics.NET.Google">
+      <HintPath>..\..\extern\Analytics.NET\Analytics.NET.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Greg, Version=1.0.6176.18754, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Greg.1.0.6176.18754\lib\net45\Greg.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
@@ -115,6 +117,10 @@ limitations under the License.
     <Compile Include="Configuration\Context.cs" />
     <Compile Include="Core\DynamoMigrator.cs" />
     <Compile Include="Exceptions\LibraryLoadFailedException.cs" />
+    <Compile Include="Logging\AnalyticsService.cs" />
+    <Compile Include="Logging\DynamoAnalyticsClient.cs" />
+    <Compile Include="Logging\IAnalyticsSession.cs" />
+    <Compile Include="Logging\NotificationMessage.cs" />
     <Compile Include="Scheduler\Disposable.cs" />
     <Compile Include="Engine\LinkedListOfList.cs" />
     <Compile Include="Extensions\EnumExtension.cs" />
@@ -234,7 +240,6 @@ limitations under the License.
     <Compile Include="Core\DynamoSelection.cs" />
     <Compile Include="Logging\Heartbeat.cs" />
     <Compile Include="Logging\Log.cs" />
-    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Models\DynamoModel.cs" />
     <Compile Include="Updates\BinaryVersion.cs" />
     <Compile Include="Updates\UpdateManager.cs" />
@@ -356,10 +361,12 @@ limitations under the License.
       <ExternLibG220 Include="$(SolutionDir)..\extern\LibG_220\*" />
       <ExternLibG221 Include="$(SolutionDir)..\extern\LibG_221\*" />
       <ExternLibG222 Include="$(SolutionDir)..\extern\LibG_222\*" />
+	  <ExternLibG223 Include="$(SolutionDir)..\extern\LibG_223\*" />
       <ExternSimplexNoise Include="$(SolutionDir)..\extern\SimplexNoise\*" />
       <SampleFiles Include="$(SolutionDir)..\doc\distrib\Samples\**\*.*" />
       <GalleryFiles Include="$(SolutionDir)..\extern\gallery\**\*.*" />
       <LocalizedResources Include="$(SolutionDir)..\extern\Localized\**\*.*" />
+      <ExternAnalytics Include="$(SolutionDir)..\extern\Analytics.NET\*.*" />
     </ItemGroup>
     <Copy SourceFiles="$(SolutionDir)..\README.md" DestinationFiles="$(OutputPath)README.txt" />
     <Copy SourceFiles="$(SolutionDir)..\doc\distrib\License.rtf" DestinationFolder="$(OutputPath)" />
@@ -373,7 +380,9 @@ limitations under the License.
     <Copy SourceFiles="@(ExternLibG220)" DestinationFolder="$(OutputPath)libg_220\" />
     <Copy SourceFiles="@(ExternLibG221)" DestinationFolder="$(OutputPath)libg_221\" />
     <Copy SourceFiles="@(ExternLibG222)" DestinationFolder="$(OutputPath)libg_222\" />
+	<Copy SourceFiles="@(ExternLibG223)" DestinationFolder="$(OutputPath)libg_223\" />
     <Copy SourceFiles="@(ExternSimplexNoise)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="@(ExternAnalytics)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(SampleFiles)" DestinationFolder="$(OutputPath)samples\%(RecursiveDir)" />
     <Copy SourceFiles="@(GalleryFiles)" DestinationFolder="$(OutputPath)gallery\%(RecursiveDir)" />
     <Copy SourceFiles="@(LocalizedResources)" DestinationFolder="$(OutputPath)%(RecursiveDir)" />

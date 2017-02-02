@@ -33,12 +33,10 @@ namespace ProtoCore.Lang
             IsUniformDepth,
             IsRectangular,
             IsHomogeneous,
-            LoadCSVWithMode,
             LoadCSV,
             Map,
             MapTo,
             NormalizeDepth,
-            NormalizeDepthWithRank,
             Print,
             PrintIndexable,
             Rank,
@@ -52,9 +50,7 @@ namespace ProtoCore.Lang
             SomeNulls,
             SomeTrue,
             Sort,
-            SortWithMode,
             SortIndexByValue,
-            SortIndexByValueWithMode,
             SortPointer,
             Reorder,
             RangeExpression,
@@ -99,12 +95,10 @@ namespace ProtoCore.Lang
             "IsUniformDepth",           // kIsUniformDepth
             "IsRectangular",            // kIsRectangular
             "IsHomogeneous",            // kIsHomogeneous
-            "ImportFromCSV",            // kLoadCSVWithMode
             "ImportFromCSV",            // kLoadCSV
             "Map",                      // kMap
             "MapTo",                    // kMapTo
             "NormalizeDepth",           // kNormalizeDepth
-            "NormalizeDepth",           // kNormalizeDepthWithRank
             "Print",                    // kPrint
             "Print",                    // kPrint
             "Rank",                     // kRank
@@ -118,9 +112,7 @@ namespace ProtoCore.Lang
             "SomeNulls",                // kSomeNulls
             "SomeTrue",                 // kSomeTrue
             "Sort",                     // kSort
-            "Sort",                     // kSortWithMode
             "SortIndexByValue",         // kSortIndexByValue
-            "SortIndexByValue",         // kSortIndexByValueWithMode
             "Sort",                     // kSortPointer
             "Reorder",                  // kReorder
             Constants.kFunctionRangeExpression, // kGenerateRange
@@ -200,7 +192,7 @@ namespace ProtoCore.Lang
 
                 new BuiltInMethod
                 {
-                    ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, 1),
+                    ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank),
                     Parameters = new List<KeyValuePair<string, ProtoCore.Type>>
                     {
                     new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank))
@@ -490,18 +482,6 @@ namespace ProtoCore.Lang
 
                 new BuiltInMethod
                 {
-                    ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0),
-                    Parameters = new List<KeyValuePair<string, ProtoCore.Type>>
-                    {
-                        new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank)),
-                        new KeyValuePair<string, ProtoCore.Type>("element", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, 0))
-                    },
-                    ID = BuiltInMethods.MethodID.Contains,
-                    MethodAttributes = new MethodAttributes(){Description  = Resources.ChecksIfListContainsTheElement}
-                },
-
-                new BuiltInMethod
-                {
                     ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Integer, 0),
                     Parameters = new List<KeyValuePair<string, ProtoCore.Type>>
                     {
@@ -571,7 +551,7 @@ namespace ProtoCore.Lang
                         new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Integer, 1)),
                         new KeyValuePair<string, ProtoCore.Type>("ascending", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0)),
                     },
-                    ID = BuiltInMethods.MethodID.SortWithMode,
+                    ID = BuiltInMethods.MethodID.Sort,
                     MethodAttributes = new MethodAttributes(true),
                 },
 
@@ -594,7 +574,7 @@ namespace ProtoCore.Lang
                         new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Double, 1)),
                         new KeyValuePair<string, ProtoCore.Type>("ascending", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0)),
                     },
-                    ID = BuiltInMethods.MethodID.SortWithMode,
+                    ID = BuiltInMethods.MethodID.Sort,
                     MethodAttributes = new MethodAttributes(true),
                 },
 
@@ -630,7 +610,7 @@ namespace ProtoCore.Lang
                         new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Double, 1)),
                         new KeyValuePair<string, ProtoCore.Type>("ascending", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0)),
                     },
-                    ID = BuiltInMethods.MethodID.SortIndexByValueWithMode,
+                    ID = BuiltInMethods.MethodID.SortIndexByValue,
                      MethodAttributes = new MethodAttributes(){Description = Resources.SortsListByValue}
                     //MAGN-3382 MethodAttributes = new MethodAttributes(true), 
                 },
@@ -691,7 +671,7 @@ namespace ProtoCore.Lang
                         new KeyValuePair<string, ProtoCore.Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank)),
                         new KeyValuePair<string, ProtoCore.Type>("rank", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, 0)),
                     },
-                    ID = BuiltInMethods.MethodID.NormalizeDepthWithRank,
+                    ID = BuiltInMethods.MethodID.NormalizeDepth,
                     MethodAttributes = new MethodAttributes(){Description = Resources.ReturnsListWithRankDepth}
                     //MAGN-3382 MethodAttributes = new MethodAttributes(true),
                 }, 
@@ -769,7 +749,7 @@ namespace ProtoCore.Lang
                         new KeyValuePair<string, ProtoCore.Type>("filePath", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.String, 0)),
                         new KeyValuePair<string, ProtoCore.Type>("transpose", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0)),
                     },
-                    ID = BuiltInMethods.MethodID.LoadCSVWithMode,
+                    ID = BuiltInMethods.MethodID.LoadCSV,
                     MethodAttributes = new MethodAttributes(){Description = Resources.ImportFileByGivenFilePathWithMode}
                 },
 
@@ -926,7 +906,7 @@ namespace ProtoCore.Lang
 
                 new BuiltInMethod
                 {
-                    ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Bool, 0),
+                    ReturnType = TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank),
                     Parameters = new List<KeyValuePair<string, Type>> 
                     {
                         new KeyValuePair<string, Type>("list", TypeSystem.BuildPrimitiveTypeObject(PrimitiveType.Var, Constants.kArbitraryRank)),

@@ -24,6 +24,11 @@ namespace Dynamo.Search
             base.Add(entry);
         }
 
+        internal void RemoveNamespace(string library, string namespc)
+        {
+            Remove(x => x.Assembly.Equals(library) && x.CreationName.StartsWith(namespc));
+        }
+
         /// <summary>
         ///     Dumps the contents of search into an Xml file.
         /// </summary>
@@ -102,7 +107,7 @@ namespace Dynamo.Search
                         XmlHelper.AddAttribute(parameterNode, "DefaultValue",
                             dynamoNode.InPorts[i].DefaultValue.ToString());
                     }
-                    XmlHelper.AddAttribute(parameterNode, "Tooltip", dynamoNode.InPorts[i].ToolTipContent);
+                    XmlHelper.AddAttribute(parameterNode, "Tooltip", dynamoNode.InPorts[i].ToolTip);
                 }
             }
 
@@ -122,7 +127,7 @@ namespace Dynamo.Search
                         XmlHelper.AddAttribute(parameterNode, "Type", entry.OutputParameters.ElementAt(i));
                     }
 
-                    XmlHelper.AddAttribute(parameterNode, "Tooltip", dynamoNode.OutPorts[i].ToolTipContent);
+                    XmlHelper.AddAttribute(parameterNode, "Tooltip", dynamoNode.OutPorts[i].ToolTip);
                 }
             }
 

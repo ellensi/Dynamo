@@ -296,6 +296,123 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What is the range of geometry sizes that you will be working on?.
+        /// </summary>
+        public static string ChangeScaleFactorPromptCaptionText {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptCaptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Numerical range shown here denote numbers in the following unit:.
+        /// </summary>
+        public static string ChangeScaleFactorPromptDescriptionBox {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptDescriptionBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this working range to model objects the size of a city block that can stretch a few kilometers and with no more accuracy than a millimeter..
+        /// </summary>
+        public static string ChangeScaleFactorPromptDescriptionContent0 {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptDescriptionContent0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this working range to model objects no larger than a truck and that can be built to manufacturing tolerances..
+        /// </summary>
+        public static string ChangeScaleFactorPromptDescriptionContent1 {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptDescriptionContent1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this working range to model precision parts no smaller than a few microns but no larger than a millimeter..
+        /// </summary>
+        public static string ChangeScaleFactorPromptDescriptionContent2 {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptDescriptionContent2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default Setting:.
+        /// </summary>
+        public static string ChangeScaleFactorPromptDescriptionDefaultSetting {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptDescriptionDefaultSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Centimeters (cm).
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitCm {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitCm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meters (m).
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitM {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Millimeters (mm).
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitMm {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitMm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} cm.
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitsNumberFormatCm {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitsNumberFormatCm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} m.
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitsNumberFormatM {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitsNumberFormatM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} mm.
+        /// </summary>
+        public static string ChangeScaleFactorPromptUnitsNumberFormatMm {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptUnitsNumberFormatMm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change Geometry Scaling Factor.
+        /// </summary>
+        public static string ChangeScaleFactorPromptWindowTitle {
+            get {
+                return ResourceManager.GetString("ChangeScaleFactorPromptWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Compact.
         /// </summary>
         public static string CompactLayoutTitle {
@@ -440,6 +557,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Auto.
+        /// </summary>
+        public static string ContextMenuLacingAuto {
+            get {
+                return ResourceManager.GetString("ContextMenuLacingAuto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cross Product.
         /// </summary>
         public static string ContextMenuLacingCrossProduct {
@@ -485,7 +611,7 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Node F_rom Selection.
+        ///   Looks up a localized string similar to Create Custom Node.
         /// </summary>
         public static string ContextMenuNodesFromSelection {
             get {
@@ -784,6 +910,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Directory Not Found.
+        /// </summary>
+        public static string DirectoryNotFound {
+            get {
+                return ResourceManager.GetString("DirectoryNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download Warning.
         /// </summary>
         public static string DownloadWarningMessageBoxTitle {
@@ -1000,20 +1135,20 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Create Custom Node.
+        /// </summary>
+        public static string DynamoViewEditMenuCreateCustomNode {
+            get {
+                return ResourceManager.GetString("DynamoViewEditMenuCreateCustomNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Create Group.
         /// </summary>
         public static string DynamoViewEditMenuCreateGroup {
             get {
                 return ResourceManager.GetString("DynamoViewEditMenuCreateGroup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Create Node From Selection.
-        /// </summary>
-        public static string DynamoViewEditMenuCreateNodeFromSelection {
-            get {
-                return ResourceManager.GetString("DynamoViewEditMenuCreateNodeFromSelection", resourceCulture);
             }
         }
         
@@ -1135,6 +1270,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Export Background 3D Preview as Image....
+        /// </summary>
+        public static string DynamoViewFileMenuExport3DAsImage {
+            get {
+                return ResourceManager.GetString("DynamoViewFileMenuExport3DAsImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Export Workspace As Image....
         /// </summary>
         public static string DynamoViewFileMenuExportAsImage {
@@ -1221,6 +1365,15 @@ namespace Dynamo.Wpf.Properties {
         public static string DynamoViewFileMenuSaveAs {
             get {
                 return ResourceManager.GetString("DynamoViewFileMenuSaveAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Dynamo Dictionary.
+        /// </summary>
+        public static string DynamoViewHelpDictionary {
+            get {
+                return ResourceManager.GetString("DynamoViewHelpDictionary", resourceCulture);
             }
         }
         
@@ -1392,6 +1545,24 @@ namespace Dynamo.Wpf.Properties {
         public static string DynamoViewSamplesMenuShowInFolder {
             get {
                 return ResourceManager.GetString("DynamoViewSamplesMenuShowInFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable T-Spline nodes (requires relaunch of Dynamo).
+        /// </summary>
+        public static string DynamoViewSettingEnableTSplineNodes {
+            get {
+                return ResourceManager.GetString("DynamoViewSettingEnableTSplineNodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experimental.
+        /// </summary>
+        public static string DynamoViewSettingExperimental {
+            get {
+                return ResourceManager.GetString("DynamoViewSettingExperimental", resourceCulture);
             }
         }
         
@@ -1724,11 +1895,11 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hide Preview Bubbles.
+        ///   Looks up a localized string similar to Geometry Scaling....
         /// </summary>
-        public static string DynamoViewSettingsMenuHidePreviewBubbles {
+        public static string DynamoViewSettingsMenuChangeScaleFactor {
             get {
-                return ResourceManager.GetString("DynamoViewSettingsMenuHidePreviewBubbles", resourceCulture);
+                return ResourceManager.GetString("DynamoViewSettingsMenuChangeScaleFactor", resourceCulture);
             }
         }
         
@@ -1756,6 +1927,15 @@ namespace Dynamo.Wpf.Properties {
         public static string DynamoViewSettingsMenuVisualizationSettings {
             get {
                 return ResourceManager.GetString("DynamoViewSettingsMenuVisualizationSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Background Preview As Image.
+        /// </summary>
+        public static string DynamoViewToolbarExport3DButtonTooltip {
+            get {
+                return ResourceManager.GetString("DynamoViewToolbarExport3DButtonTooltip", resourceCulture);
             }
         }
         
@@ -2165,6 +2345,27 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publish Fail!.
+        /// </summary>
+        public static string FileNotPublishCaption {
+            get {
+                return ResourceManager.GetString("FileNotPublishCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File(s) were not found or are contained inside of a package. Please only add files that are located outside of packages.
+        ///
+        ///Failed to publish file(s): 
+        ///{0}.
+        /// </summary>
+        public static string FileNotPublishMessage {
+            get {
+                return ResourceManager.GetString("FileNotPublishMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No file selected..
         /// </summary>
         public static string FilePathConverterNoFileSelected {
@@ -2300,6 +2501,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Zoom to Fit.
+        /// </summary>
+        public static string InCanvasFitViewButtonToolTip {
+            get {
+                return ResourceManager.GetString("InCanvasFitViewButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable background 3D preview navigation (Ctrl + B).
         /// </summary>
         public static string InCanvasGeomButtonToolTip {
@@ -2314,6 +2524,42 @@ namespace Dynamo.Wpf.Properties {
         public static string InCanvasNodeButtonToolTip {
             get {
                 return ResourceManager.GetString("InCanvasNodeButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orbit.
+        /// </summary>
+        public static string InCanvasOrbitButtonToolTip {
+            get {
+                return ResourceManager.GetString("InCanvasOrbitButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pan.
+        /// </summary>
+        public static string InCanvasPanButtonToolTip {
+            get {
+                return ResourceManager.GetString("InCanvasPanButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom In.
+        /// </summary>
+        public static string InCanvasZoomInButtonToolTip {
+            get {
+                return ResourceManager.GetString("InCanvasZoomInButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom Out.
+        /// </summary>
+        public static string InCanvasZoomOutButtonToolTip {
+            get {
+                return ResourceManager.GetString("InCanvasZoomOutButtonToolTip", resourceCulture);
             }
         }
         
@@ -2579,6 +2825,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No replication guide will be added..
+        /// </summary>
+        public static string LacingAutoToolTip {
+            get {
+                return ResourceManager.GetString("LacingAutoToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to For two lists {a,b,c}{1,2,3} returns {a1,a2,a3}{b1,b2,b3}{c1,c2,c3}..
         /// </summary>
         public static string LacingCrossProductToolTip {
@@ -2758,6 +3013,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We can&apos;t save &quot;{0}&quot; because the file is read only. To keep your changes, you&apos;ll need to save it with a new name or in a different location..
+        /// </summary>
+        public static string MessageConfirmToSaveReadOnlyCustomNode {
+            get {
+                return ResourceManager.GetString("MessageConfirmToSaveReadOnlyCustomNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to uninstall {0} ?  This will delete the packages root directory.
         ///
         ///You can always redownload the package..
@@ -2792,6 +3056,15 @@ namespace Dynamo.Wpf.Properties {
         public static string MessageCustomNodeNoName {
             get {
                 return ResourceManager.GetString("MessageCustomNodeNoName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Opening File.
+        /// </summary>
+        public static string MessageErrorOpeningFileGeneral {
+            get {
+                return ResourceManager.GetString("MessageErrorOpeningFileGeneral", resourceCulture);
             }
         }
         
@@ -3013,7 +3286,9 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} needs to uninstall {1} to continue but it contains binaries already loaded into Dynamo.  It&apos;s now marked for removal, but you&apos;ll need to first restart {0}..
+        ///   Looks up a localized string similar to {2} has dependencies. To install {2}, {0} needs to first uninstall the following dependent packages: {1}. Restart {0} to complete the uninstall, then try and download {2} again.
+        ///
+        ///Uninstall the following dependent packages: {1}?.
         /// </summary>
         public static string MessageUninstallToContinue2 {
             get {
@@ -3229,6 +3504,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to null.
+        /// </summary>
+        public static string NullString {
+            get {
+                return ResourceManager.GetString("NullString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string OKButton {
@@ -3366,6 +3650,16 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A problem occurred when trying to install the package. Dynamo is unable to obtain read/write access to
+        ///{0}.
+        /// </summary>
+        public static string PackageFolderNotAccessible {
+            get {
+                return ResourceManager.GetString("PackageFolderNotAccessible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Package Manager Website.
         /// </summary>
         public static string PackageManagerWebSiteButton {
@@ -3389,6 +3683,15 @@ namespace Dynamo.Wpf.Properties {
         public static string PackageNeedAtLeastOneFile {
             get {
                 return ResourceManager.GetString("PackageNeedAtLeastOneFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The root directory of the package does not exist. Please try and re-install the package..
+        /// </summary>
+        public static string PackageNotExisted {
+            get {
+                return ResourceManager.GetString("PackageNotExisted", resourceCulture);
             }
         }
         
@@ -3951,11 +4254,30 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Published Successfully.
+        /// </summary>
+        public static string PublishPackageDialogCaption {
+            get {
+                return ResourceManager.GetString("PublishPackageDialogCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish Locally.
         /// </summary>
         public static string PublishPackageLocally {
             get {
                 return ResourceManager.GetString("PublishPackageLocally", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package published successfully. 
+        ///Want to publish a different package?.
+        /// </summary>
+        public static string PublishPackageMessage {
+            get {
+                return ResourceManager.GetString("PublishPackageMessage", resourceCulture);
             }
         }
         
@@ -4239,6 +4561,24 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to screenshot_3D.
+        /// </summary>
+        public static string ScreenShotFrom3DParameter {
+            get {
+                return ResourceManager.GetString("ScreenShotFrom3DParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to screenshot_3D_shortcut.
+        /// </summary>
+        public static string ScreenShotFrom3DShortcutParameter {
+            get {
+                return ResourceManager.GetString("ScreenShotFrom3DShortcutParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Top Result.
         /// </summary>
         public static string SearchViewTopResult {
@@ -4320,6 +4660,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please update the permissions or go to &apos;Settings &gt; Manage Node and Package Paths...&apos; to change your default directory..
+        /// </summary>
+        public static string SolutionToFolderNotWritatbleError {
+            get {
+                return ResourceManager.GetString("SolutionToFolderNotWritatbleError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced Tutorials.
         /// </summary>
         public static string StartPageAdvancedTutorials {
@@ -4379,6 +4728,15 @@ namespace Dynamo.Wpf.Properties {
         public static string StartPageDiscussionForum {
             get {
                 return ResourceManager.GetString("StartPageDiscussionForum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dynamo Dictionary.
+        /// </summary>
+        public static string StartPageDynamoDictionary {
+            get {
+                return ResourceManager.GetString("StartPageDynamoDictionary", resourceCulture);
             }
         }
         
@@ -4545,6 +4903,15 @@ namespace Dynamo.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Read-Only] .
+        /// </summary>
+        public static string TabFileNameReadOnlyPrefix {
+            get {
+                return ResourceManager.GetString("TabFileNameReadOnlyPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I Accept.
         /// </summary>
         public static string TermsOfUseAcceptButton {
@@ -4577,6 +4944,15 @@ namespace Dynamo.Wpf.Properties {
         public static string TooltipCurrentIndex {
             get {
                 return ResourceManager.GetString("TooltipCurrentIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable To Access Package Directory.
+        /// </summary>
+        public static string UnableToAccessPackageDirectory {
+            get {
+                return ResourceManager.GetString("UnableToAccessPackageDirectory", resourceCulture);
             }
         }
         
@@ -4858,6 +5234,33 @@ namespace Dynamo.Wpf.Properties {
         public static string UsageReportPromptDialogTitle {
             get {
                 return ResourceManager.GetString("UsageReportPromptDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep 1 input list&apos;s nesting.
+        /// </summary>
+        public static string UseLevelKeepListStructureHint {
+            get {
+                return ResourceManager.GetString("UseLevelKeepListStructureHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep list structure.
+        /// </summary>
+        public static string UseLevelKeepListStructurePopupMenuItem {
+            get {
+                return ResourceManager.GetString("UseLevelKeepListStructurePopupMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Levels.
+        /// </summary>
+        public static string UseLevelPopupMenuItem {
+            get {
+                return ResourceManager.GetString("UseLevelPopupMenuItem", resourceCulture);
             }
         }
         

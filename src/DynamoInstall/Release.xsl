@@ -55,10 +55,6 @@
     <xsl:key name="nunit-search" match="wix:Component[contains(wix:File/@Source, 'nunit')]" use="@Id"/>
     <xsl:template match="wix:Component[key('nunit-search', @Id)]" />
 	
-    <!--Exclude OpenSans* fonts-->
-    <xsl:key name="OpenSans-search" match="wix:Component[contains(wix:File/@Source, 'OpenSans')]" use="@Id"/>
-    <xsl:template match="wix:Component[key('OpenSans-search', @Id)]" />
-  
     <!--Exclude *.vshost.exe*-->
     <xsl:key name="vshost-search" match="wix:Component[contains(wix:File/@Source, 'vshost.exe')]" use="@Id"/>
     <xsl:template match="wix:Component[key('vshost-search', @Id)]" />
@@ -81,6 +77,11 @@
     <xsl:key name="revit_2017-search" match="wix:Component[contains(wix:File/@Source, '\Revit_2017\')]" use="@Id"/>
     <xsl:template match="wix:Directory[@Name = 'Revit_2017']" />
     <xsl:template match="wix:Component[key('revit_2017-search', @Id)]" />
+
+    <!--Exclude 'revit_2018' folders-->
+    <xsl:key name="revit_2018-search" match="wix:Component[contains(wix:File/@Source, '\Revit_2018\')]" use="@Id"/>
+    <xsl:template match="wix:Directory[@Name = 'Revit_2018']" />
+    <xsl:template match="wix:Component[key('revit_2018-search', @Id)]" />
 
     <!--Exclude 'int' folders-->
     <xsl:template match="wix:Directory[@Name = 'int']" />

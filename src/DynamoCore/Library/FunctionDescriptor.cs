@@ -1,16 +1,15 @@
+using Dynamo.Graph.Nodes;
+using Dynamo.Interfaces;
+using Dynamo.Library;
+using ProtoCore;
+using ProtoCore.DSASM;
+using ProtoCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dynamo.Graph.Nodes;
-using Dynamo.Interfaces;
-using Dynamo.Library;
-
-using ProtoCore.DSASM;
-using ProtoCore.Utils;
-using ProtoCore;
 
 namespace Dynamo.Engine
 {
@@ -142,6 +141,11 @@ namespace Dynamo.Engine
         ///     Indicates if the function is packaged element (either zero-touch DLLs or DYFs)
         /// </summary>
         public bool IsPackageMember { get; set; }
+
+        /// <summary>
+        ///     Indicates if the lacing strategy is disabled on the function
+        /// </summary>
+        public bool IsLacingDisabled { get; set; } 
     }
 
     /// <summary>
@@ -201,6 +205,7 @@ namespace Dynamo.Engine
             CanUpdatePeriodically = funcDescParams.CanUpdatePeriodically;
             IsBuiltIn = funcDescParams.IsBuiltIn;
             IsPackageMember = funcDescParams.IsPackageMember;
+            IsLacingDisabled = funcDescParams.IsLacingDisabled;
         }
 
         /// <summary>
@@ -286,7 +291,7 @@ namespace Dynamo.Engine
             get { return !String.IsNullOrEmpty(Summary) ? Summary : string.Empty; }
         }
 
-        private IEnumerable<Tuple<string, string>> returns; 
+        private IEnumerable<Tuple<string, string>> returns;
 
         /// <summary>
         ///     If the XML documentation for the function includes a returns field,
@@ -512,6 +517,11 @@ namespace Dynamo.Engine
         public IPathManager PathManager { get { return pathManager; } }
 
         /// <summary>
+        ///     Returns if the lacing strategy is disabled
+        /// </summary>
+        public bool IsLacingDisabled { get; private set; }
+
+        /// <summary>
         ///     Overrides equality check of two <see cref="FunctionDescriptor"/> objects
         /// </summary>
         /// <param name="obj"><see cref="FunctionDescriptor"/> object to compare 
@@ -541,7 +551,7 @@ namespace Dynamo.Engine
             {
                 return CoreUtils.IsInternalMethod(FunctionName)
                     ? LibraryServices.Categories.Operators
-                    : LibraryServices.Categories.BuiltIns;
+                    : LibraryServices.Categories.BuiltIn;
             }
 
             LibraryCustomization cust = LibraryCustomizationServices.GetForAssembly(Assembly, pathManager);

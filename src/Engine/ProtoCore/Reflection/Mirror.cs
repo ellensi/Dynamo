@@ -134,13 +134,23 @@ namespace ProtoCore
                 return GetBuiltInMethods(core).Where(x => x.MethodName == methodName);
             }
 
+            /// <summary>
+            /// Get all reference type classes imported in the VM 
+            /// except for internal and placeholder types
+            /// </summary>
+            /// <param name="core"></param>
+            /// <returns></returns>
             public static IEnumerable<ClassMirror> GetClasses(Core core)
             {
-                return core.ClassTable.ClassNodes.Skip((int)PrimitiveType.MaxPrimitive).
-                    Where(x => !CoreUtils.StartsWithSingleUnderscore(x.Name)).
-                    Select(x => new ClassMirror(core, x));
+                return GetAllTypes(core).Where(x => !x.IsEmpty).
+                    Skip((int)PrimitiveType.MaxPrimitive);
             }
 
+            /// <summary>
+            /// Get all types except for internal VM types
+            /// </summary>
+            /// <param name="core"></param>
+            /// <returns></returns>
             public static IEnumerable<ClassMirror> GetAllTypes(Core core)
             {
                 // TODO: Get rid of keyword "PointerReserved" and PrimitiveType.kTypePointer
@@ -151,6 +161,11 @@ namespace ProtoCore
                     Select(x => new ClassMirror(core, x));
             }
 
+            /// <summary>
+            /// Get all methods and properties for all classes
+            /// </summary>
+            /// <param name="core"></param>
+            /// <returns></returns>
             public static IEnumerable<StaticMirror> GetGlobals(Core core)
             {
                 List<StaticMirror> members = new List<StaticMirror>();
@@ -251,6 +266,14 @@ namespace ProtoCore
                 }
             }
 
+            /// <summary>
+            /// True if the class is a dummy, placeholder class
+            /// </summary>
+            public bool IsEmpty
+            {
+                get { return ClassNode.IsEmpty; }
+            }
+
             public ClassMirror(string className, ProtoCore.Core core)
                 : base(core, className)
             {
@@ -340,14 +363,10 @@ namespace ProtoCore
                 Validity.Assert(staticCore != null);
 
                 ClassNode cNode = ClassNode;
-                while (cNode.Bases.Count > 0)
+                while (cNode.Base != Constants.kInvalidIndex)
                 {
-
-                    int ci = cNode.Bases[0];
-                    Validity.Assert(ci != ProtoCore.DSASM.Constants.kInvalidIndex);
-
+                    int ci = cNode.Base;
                     baseClasses.Add(new ClassMirror(staticCore, staticCore.ClassTable.ClassNodes[ci], this.libraryMirror));
-
                     cNode = staticCore.ClassTable.ClassNodes[ci];
                 }
                 return baseClasses;
@@ -587,33 +606,8 @@ namespace ProtoCore
         public class PropertyMirror : StaticMirror
         {
             private ProcedureNode procNode = null;
-            public ProtoCore.Type? Type
-            {
-                get
-                {
-                    if (procNode != null)
-                    {
-                        if (isSetter)
-                            return procNode.ArgumentTypes[0];
-                        else
-                            return procNode.ReturnType;
-                    }
-                    return null;
-                }
-                set { }
-            }
-
-
             public string PropertyName { get; private set; }
-
             private bool isSetter = false;
-            public bool IsSetter
-            {
-                get
-                {
-                    return isSetter;
-                }
-            }
 
             public bool IsStatic
             {

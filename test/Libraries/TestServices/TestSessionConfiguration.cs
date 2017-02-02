@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 
 using DynamoShapeManager;
+using System.Collections.Generic;
 
 namespace TestServices
 {
@@ -48,7 +49,15 @@ namespace TestServices
             if (!File.Exists(configPath))
             {
                 DynamoCorePath = dynamoCoreDirectory;
-                RequestedLibraryVersion = LibraryVersion.Version220;
+
+                var versions = new List<LibraryVersion>
+                {
+                    LibraryVersion.Version223,
+                    LibraryVersion.Version222,
+                    LibraryVersion.Version221
+                };
+                var shapeManagerPath = string.Empty;
+                RequestedLibraryVersion = Utilities.GetInstalledAsmVersion(versions, ref shapeManagerPath, dynamoCoreDirectory);
                 return;
             }
 
@@ -64,7 +73,7 @@ namespace TestServices
 
             LibraryVersion version;
             RequestedLibraryVersion = LibraryVersion.TryParse(versionStr, out version) ? 
-                version : LibraryVersion.Version220;
+                version : LibraryVersion.Version221;
             
         }
 

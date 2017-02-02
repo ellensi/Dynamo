@@ -194,6 +194,8 @@ namespace DSCore
         /// <param name="colors"></param>
         /// <param name="parameter"></param>
         /// <returns>The interpolated color or white.</returns>
+        /// This algorithm is not the same as the solution found from wikipedia 
+        /// (reference: https://en.wikipedia.org/wiki/Bilinear_interpolation)
         [IsVisibleInDynamoLibrary(false)]
         public static Color Blerp(IList<IndexedColor2D> colors, UV parameter)
         {
@@ -207,7 +209,7 @@ namespace DSCore
                 {
                     return ci.Color;
                 }
-                var w = 1/d;
+                var w = 1 / d;
 
                 num[0] += ci.Color.Alpha * w;
                 num[1] += ci.Color.Red * w;
@@ -221,6 +223,8 @@ namespace DSCore
                 (int)(num[2] / totalArea),
                 (int)(num[3] / totalArea));
         }
+
+
 
         private static double Area(UV min, UV max)
         {
@@ -247,7 +251,12 @@ namespace DSCore
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Color)obj);
         }
-
+        /// <summary>
+        /// Construct a Color by combining two input Colors.
+        /// </summary>
+        /// <param name="Color 1"></param>
+        /// <param name="Color 2"></param>
+        /// <returns></returns>
         public static Color Add(Color c1, Color c2)
         {
             return ByARGB(
@@ -256,7 +265,12 @@ namespace DSCore
                 c1.Green + c2.Green,
                 c1.Blue + c2.Blue);
         }
-
+        /// <summary>
+        /// Multiply an input color with a number multiplier to produce a darker color. Input color must have an alpha less than 255.
+        /// </summary>
+        /// <param name="Color 1"></param>
+        /// <param name="multiplier"></param>
+        /// <returns></returns>
         public static Color Multiply(Color c1, double div)
         {
             return ByARGB(
@@ -265,7 +279,12 @@ namespace DSCore
                 (int)(c1.Green * div),
                 (int)(c1.Blue * div));
         }
-
+        /// <summary>
+        /// Divide an input color with a number divider to produce a brighter color and remove color tint
+        /// </summary>
+        /// <param name="Color 1"></param>
+        /// <param name="divider"></param>
+        /// <returns></returns>
         public static Color Divide(Color c1, double div)
         {
             return ByARGB(

@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 
 using Microsoft.Win32;
+using System.Configuration;
+using System.Reflection;
 
 namespace DynamoInstallDetective
 {
@@ -317,6 +319,34 @@ namespace DynamoInstallDetective
         DynamoProducts(string debugPath)
         {
             this.debugPath = debugPath;
+        }
+
+        public static string GetDynamoPath(Version version, string debugPath = null)
+        {
+            var additionalPath = debugPath;
+            var configPath = Path.Combine(Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly().Location), "Dynamo.config");
+            if (File.Exists(configPath))
+            {
+                // Get DynamoCore path from the Dynamo.config file, if it exists
+                var map = new ExeConfigurationFileMap() { ExeConfigFilename = configPath };
+                
+                var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+                var runtime = config.AppSettings.Settings["DynamoRuntime"];
+                if (runtime != null && !string.IsNullOrEmpty(runtime.Value) && Directory.Exists(runtime.Value))
+                {
+                    additionalPath = runtime.Value;
+                }
+            }
+
+            var installs = FindDynamoInstallations(additionalPath);
+            if (installs == null) return string.Empty;
+
+            return installs.Products
+                .Where(p => p.VersionInfo.Item1 == version.Major)
+                .Where(p => p.VersionInfo.Item2 >= version.Minor)
+                .Select(p => p.InstallLocation)
+                .LastOrDefault();
         }
 
         public static DynamoProducts FindDynamoInstallations(string debugPath = null, IProductLookUp lookUp = null)

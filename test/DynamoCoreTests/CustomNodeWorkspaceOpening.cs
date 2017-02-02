@@ -38,6 +38,30 @@ namespace Dynamo.Tests
         }
 
         [Test]
+        public void CanLoadReadOnlyNode()
+        {
+            // Open a read-only custom node
+            var pathInTestsDir = @"core\CustomNodes\add_Read_only.dyf";
+            var filePath = Path.Combine(TestDirectory, pathInTestsDir);
+            FileInfo fInfo = new FileInfo(filePath);
+            fInfo.IsReadOnly = true;
+            Assert.IsTrue(DynamoUtilities.PathHelper.IsReadOnlyPath(filePath));
+
+            OpenTestFile(@"core\CustomNodes", "add_Read_only.dyf");
+            var nodeWorkspace = CurrentDynamoModel.Workspaces.FirstOrDefault(x => x is CustomNodeWorkspaceModel);
+            Assert.IsNotNull(nodeWorkspace);
+
+            // a file with a read-only custom node definition is opened
+            OpenTestFile(@"core\CustomNodes", "TestAdd.dyn");
+            var homeWorkspace = CurrentDynamoModel.CurrentWorkspace as HomeWorkspaceModel;
+            Assert.NotNull(homeWorkspace);
+            homeWorkspace.Run();
+
+            var funcNode = homeWorkspace.Nodes.OfType<Function>().First();
+            Assert.AreEqual(2.0, GetPreviewValue(funcNode.GUID));
+        }
+
+        [Test]
         public void CanOpenCustomNodeWorkspace()
         {
             OpenTestFile(@"core\combine", "Sequence2.dyf");
@@ -53,7 +77,6 @@ namespace Dynamo.Tests
             OpenTestFile(@"core\combine", "Sequence2.dyf");
             
             var res = CurrentDynamoModel.SearchModel.Search("Sequence2");
-            Assert.AreEqual(6, res.Count());
             Assert.AreEqual("Sequence2", res.First().Name);
         }
     }

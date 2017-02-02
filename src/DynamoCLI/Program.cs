@@ -1,7 +1,6 @@
 ﻿using System;
 using Dynamo.Applications;
 using Dynamo.Models;
-using Dynamo.Logging;
 
 namespace DynamoCLI
 {
@@ -14,8 +13,8 @@ namespace DynamoCLI
             try
             {
                 var cmdLineArgs = StartupUtils.CommandLineArguments.Parse(args);
-                var locale = Dynamo.Applications.StartupUtils.SetLocale(cmdLineArgs);
-                var model = Dynamo.Applications.StartupUtils.MakeModel(true);
+                var locale = StartupUtils.SetLocale(cmdLineArgs);
+                var model = StartupUtils.MakeModel(true);
                 var runner = new CommandLineRunner(model);
                 runner.Run(cmdLineArgs);
                 
@@ -25,9 +24,7 @@ namespace DynamoCLI
                 try
                 {
                     DynamoModel.IsCrashing = true;
-                    InstrumentationLogger.LogException(e);
-                    StabilityTracking.GetInstance().NotifyCrash();
-
+                    Dynamo.Logging.Analytics.TrackException(e, true);
                 }
                 catch
                 {

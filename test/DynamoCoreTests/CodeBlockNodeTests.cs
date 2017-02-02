@@ -248,13 +248,13 @@ b = c[w][x][y][z];";
             var codeBlockNode = CreateCodeBlockNode();
 
             // Before code changes, there should be no in/out ports.
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(0, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(0, codeBlockNode.OutPorts.Count);
 
             // After code changes, there should be two output ports.
             UpdateCodeBlockNodeContent(codeBlockNode, "a = 1..6;\na[2]=a[2] + 1;");
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(2, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
         }
 
         [Test]
@@ -295,13 +295,13 @@ b = c[w][x][y][z];";
             var codeBlockNode = CreateCodeBlockNode();
 
             // Before code changes, there should be no in/out ports.
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(0, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(0, codeBlockNode.OutPorts.Count);
 
             // After code changes, there should be input & output ports.
             UpdateCodeBlockNodeContent(codeBlockNode, "Flatten(l.Explode()).Area;");
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
         }
 
         [Test]
@@ -329,6 +329,60 @@ b = c[w][x][y][z];";
             BeginRun();
 
             Assert.AreEqual(-10, result.CachedValue.Data);
+        }
+
+        [Test]
+        public void Test_InportOutportConnections_RetainedForCodeBlockErrors()
+        {
+            string openPath = Path.Combine(TestDirectory,
+                @"core\dsevaluation\Test_InportOutportConnections_RetainedForCodeBlockErrors.dyn");
+            OpenModel(openPath);
+            Assert.AreEqual(3, CurrentDynamoModel.CurrentWorkspace.Nodes.Count());
+
+            var cbn = CurrentDynamoModel.CurrentWorkspace.NodeFromWorkspace<CodeBlockNodeModel>(
+                Guid.Parse("50edf3c7-7e0d-4e2d-8344-f7380eddd827"));
+
+            Assert.IsNotNull(cbn);
+            Assert.AreEqual(ElementState.Active, cbn.State);
+            Assert.IsTrue(cbn.CodeStatements.Any());
+
+            Assert.AreEqual(5, cbn.InPorts.Count);
+            Assert.AreEqual(3, cbn.OutPorts.Count);
+            Assert.AreEqual(8, cbn.AllConnectors.Count());
+
+            // add syntax error in cbn code and update
+            string codeInCBN = @"x = {a$,b,c,d,e};x[1];x[3];";
+            UpdateCodeBlockNodeContent(cbn, codeInCBN);
+
+            // Verify that cbn is in error state and number of input, output ports remains the same
+            Assert.IsNotNull(cbn);
+            Assert.AreEqual(ElementState.Error, cbn.State);
+            Assert.IsTrue(!cbn.CodeStatements.Any());
+            
+            Assert.AreEqual(5, cbn.InPorts.Count);
+            Assert.AreEqual(3, cbn.OutPorts.Count);
+            Assert.AreEqual(8, cbn.AllConnectors.Count());
+        }
+
+        [Test]
+        public void Test_InportOutportConnections_RetainedForCodeBlockErrorsInFile()
+        {
+            string openPath = Path.Combine(TestDirectory,
+                @"core\dsevaluation\Test_InportOutportConnections_RetainedForCodeBlockErrorsInFile.dyn");
+            OpenModel(openPath);
+            Assert.AreEqual(3, CurrentDynamoModel.CurrentWorkspace.Nodes.Count());
+
+            var cbn = CurrentDynamoModel.CurrentWorkspace.NodeFromWorkspace<CodeBlockNodeModel>(
+                Guid.Parse("50edf3c7-7e0d-4e2d-8344-f7380eddd827"));
+
+            // Verify that cbn is in error state and input, output ports exist
+            Assert.IsNotNull(cbn);
+            Assert.AreEqual(ElementState.Error, cbn.State);
+            Assert.IsTrue(!cbn.CodeStatements.Any());
+
+            Assert.AreEqual(5, cbn.InPorts.Count);
+            Assert.AreEqual(3, cbn.OutPorts.Count);
+            Assert.AreEqual(8, cbn.AllConnectors.Count());
         }
 
         [Test]
@@ -395,13 +449,13 @@ b = c[w][x][y][z];";
             UpdateCodeBlockNodeContent(codeBlockNode, @"point.ByCoordinates(0,0,0);");
 
             // Check
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
 
             // Update the code block node
             UpdateCodeBlockNodeContent(codeBlockNode, @"Point.ByCoordinates(0,0,0);");
 
             // Check
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
         }
 
         [Test]
@@ -427,13 +481,13 @@ b = c[w][x][y][z];";
             UpdateCodeBlockNodeContent(codeBlockNode0, @"x=&y;");
 
             // Check
-            Assert.AreEqual(1, codeBlockNode0.InPortData.Count);
+            Assert.AreEqual(1, codeBlockNode0.InPorts.Count);
 
             // Update the first code block node to have y defined
             UpdateCodeBlockNodeContent(codeBlockNode0, "y=1;\nx=y;");
 
             // Check
-            Assert.AreEqual(0, codeBlockNode0.InPortData.Count);
+            Assert.AreEqual(0, codeBlockNode0.InPorts.Count);
         }
 
         [Test]
@@ -462,7 +516,7 @@ b = c[w][x][y][z];";
             UpdateCodeBlockNodeContent(codeBlockNode0, @"truuuue;");
 
             // Check
-            Assert.AreEqual(1, codeBlockNode0.InPortData.Count);
+            Assert.AreEqual(1, codeBlockNode0.InPorts.Count);
 
             // Create the second code block node
             var codeBlockNode1 = CreateCodeBlockNode();
@@ -477,7 +531,7 @@ b = c[w][x][y][z];";
             UpdateCodeBlockNodeContent(codeBlockNode0, @"true;");
 
             // Check
-            Assert.AreEqual(0, codeBlockNode0.InPortData.Count);
+            Assert.AreEqual(0, codeBlockNode0.InPorts.Count);
 
             // Run
             Assert.DoesNotThrow(BeginRun);
@@ -509,12 +563,12 @@ b = c[w][x][y][z];";
             // Connect the two nodes
             ConnectorModel.Make(pointOriginNode, codeBlockNode, 0, 0);
 
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
 
             // Update the code block node
             UpdateCodeBlockNodeContent(codeBlockNode, "pt = Point.ByCoordinates(0,0,0);\nCircle.ByCenterPointRadius(pt,5)");
 
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
         }
 
         [Test]
@@ -527,30 +581,30 @@ b = c[w][x][y][z];";
 
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(2, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(2, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
 
-            Assert.AreEqual(2, codeBlockNode.OutPortData[0].LineIndex);
+            Assert.AreEqual(2, codeBlockNode.OutPorts[0].LineIndex);
 
             code = "c+ \n d; \n /* comment \n */ \n a+b;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(4, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(2, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(4, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(2, codeBlockNode.OutPorts.Count);
 
             // The first output port should be at the first line
-            Assert.AreEqual(0, codeBlockNode.OutPortData[0].LineIndex);
+            Assert.AreEqual(0, codeBlockNode.OutPorts[0].LineIndex);
 
             // The second output port should be at the 4th line, which is also 3 lines below the first
-            Assert.AreEqual(4, codeBlockNode.OutPortData[1].LineIndex);
+            Assert.AreEqual(4, codeBlockNode.OutPorts[1].LineIndex);
 
             code = "/*comment \n */ \n a[0]+b;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(2, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(2, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
 
-            Assert.AreEqual(2, codeBlockNode.OutPortData[0].LineIndex);
+            Assert.AreEqual(2, codeBlockNode.OutPorts[0].LineIndex);
         }
 
         [Test]
@@ -576,26 +630,26 @@ var06 = g;
             var codeBlockNode = CreateCodeBlockNode();
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(7, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(7, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(7, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(7, codeBlockNode.OutPorts.Count);
 
             // Input ports are regular ports that do not depend on LineIndex.
-            Assert.AreEqual(-1, codeBlockNode.InPortData[0].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[1].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[2].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[3].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[4].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[5].LineIndex);
-            Assert.AreEqual(-1, codeBlockNode.InPortData[6].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[0].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[1].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[2].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[3].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[4].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[5].LineIndex);
+            Assert.AreEqual(-1, codeBlockNode.InPorts[6].LineIndex);
 
             // Output ports are smaller ports that depend on LineIndex.
-            Assert.AreEqual(0, codeBlockNode.OutPortData[0].LineIndex);
-            Assert.AreEqual(2, codeBlockNode.OutPortData[1].LineIndex);
-            Assert.AreEqual(3, codeBlockNode.OutPortData[2].LineIndex);
-            Assert.AreEqual(6, codeBlockNode.OutPortData[3].LineIndex);
-            Assert.AreEqual(7, codeBlockNode.OutPortData[4].LineIndex);
-            Assert.AreEqual(8, codeBlockNode.OutPortData[5].LineIndex);
-            Assert.AreEqual(12, codeBlockNode.OutPortData[6].LineIndex);
+            Assert.AreEqual(0, codeBlockNode.OutPorts[0].LineIndex);
+            Assert.AreEqual(2, codeBlockNode.OutPorts[1].LineIndex);
+            Assert.AreEqual(3, codeBlockNode.OutPorts[2].LineIndex);
+            Assert.AreEqual(6, codeBlockNode.OutPorts[3].LineIndex);
+            Assert.AreEqual(7, codeBlockNode.OutPorts[4].LineIndex);
+            Assert.AreEqual(8, codeBlockNode.OutPorts[5].LineIndex);
+            Assert.AreEqual(12, codeBlockNode.OutPorts[6].LineIndex);
 
             // Ensure that "NodeModel.GetPortVerticalOffset" does not regress.
             // This is the way connector position is calculated.
@@ -623,20 +677,20 @@ var06 = g;
 
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(2, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(2, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(2, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(2, codeBlockNode.OutPorts.Count);
 
             code = "x%2 == 0 ? x : -x; \n y = a+b;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(3, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(2, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(3, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(2, codeBlockNode.OutPorts.Count);
 
             code = "f(x); \n y = a+b;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(3, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(2, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(3, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(2, codeBlockNode.OutPorts.Count);
         }
 
         [Test]
@@ -649,14 +703,14 @@ var06 = g;
 
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
 
             code = "x%2 == 0 ? x : -x;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
         }
 
         [Test]
@@ -669,14 +723,14 @@ var06 = g;
 
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
 
             code = "a : int  = 2;";
             UpdateCodeBlockNodeContent(codeBlockNode, code);
 
-            Assert.AreEqual(0, codeBlockNode.InPortData.Count);
-            Assert.AreEqual(1, codeBlockNode.OutPortData.Count);
+            Assert.AreEqual(0, codeBlockNode.InPorts.Count);
+            Assert.AreEqual(1, codeBlockNode.OutPorts.Count);
         }
 
         [Test]
@@ -686,11 +740,37 @@ var06 = g;
             string code = @"x + ""anyString"";";
 
             UpdateCodeBlockNodeContent(codeBlockNode, code);
-            Assert.AreEqual(1, codeBlockNode.InPortData.Count);
+            Assert.AreEqual(1, codeBlockNode.InPorts.Count);
         }
 
-        #region CodeBlockUtils Specific Tests
+        [Test]
+        public void TestEscapeSequenceAtEnd()
+        {
+            string openPath = Path.Combine(TestDirectory, @"core\dsevaluation\CBN_escapeseq.dyn");
+            OpenModel(openPath);
+            Assert.AreEqual(4, CurrentDynamoModel.CurrentWorkspace.Nodes.Count());
 
+            BeginRun();
+
+            AssertPreviewValue("a26a599a-e608-4d6f-8de8-309f7fb0972d", "hello\\");
+
+            var helloBrokenNode = CurrentDynamoModel.CurrentWorkspace.NodeFromWorkspace<CodeBlockNodeModel>(
+                Guid.Parse("060f6309-80b1-4a15-bc8d-accb2dd24d22"));
+            int outportCount = helloBrokenNode.OutPorts.Count;
+            Assert.IsFalse(outportCount > 0);
+
+            var helloWorldNode = CurrentDynamoModel.CurrentWorkspace.NodeFromWorkspace<CodeBlockNodeModel>( 
+                Guid.Parse("90109553-56c2-4afd-ab3d-27356e5c2f07"));
+            AssertPreviewValue("90109553-56c2-4afd-ab3d-27356e5c2f07", "world");
+
+            var helloWorldBrokenNode = CurrentDynamoModel.CurrentWorkspace.NodeFromWorkspace<CodeBlockNodeModel>(
+                Guid.Parse("2e28c888-77b4-4bd5-a946-d8588368e014"));
+            int outportBrokenNodeCount = helloBrokenNode.OutPorts.Count;
+            Assert.IsFalse(outportCount > 0);
+        }
+
+
+        #region CodeBlockUtils Specific Tests
         [Test]
         [Category("UnitTests")]
         public void TestSemiColonAddition()
@@ -966,7 +1046,7 @@ var06 = g;
             var cbn = CreateCodeBlockNode();
 
             UpdateCodeBlockNodeContent(cbn, code);
-            Assert.AreEqual(1, cbn.OutPortData.Count);
+            Assert.AreEqual(1, cbn.OutPorts.Count);
 
             // FFITarget introduces conflicts with Point class in
             // FFITarget.Dummy.Point, FFITarget.Dynamo.Point
@@ -1434,13 +1514,31 @@ var06 = g;
             string code = "im";
             var completions = codeCompletionServices.SearchCompletions(code, Guid.Empty);
 
-            // Expected 5 completion items
-            Assert.AreEqual(5, completions.Count());
+            // Expected 4 completion items
+            Assert.AreEqual(4, completions.Count());
 
-            string[] expected = { "Decimal", "Imperative", "ImportFromCSV", "Minimal", "MinimalTracedClass" };
+            string[] expected = { "Imperative", "ImportFromCSV", "Minimal", "MinimalTracedClass" };
             var actual = completions.Select(x => x.Text).OrderBy(x => x);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        [Category("UnitTests")]
+        public void TestCompletionOnType1()
+        {
+            var codeCompletionServices = new CodeCompletionServices(libraryServicesCore);
+            var completions = codeCompletionServices.GetCompletionsOnType("", "CodeCompletionClass");
+            Assert.AreEqual(6, completions.Count());
+        }
+
+        [Test]
+        [Category("UnitTests")]
+        public void TestCompletionOnType2()
+        {
+            var codeCompletionServices = new CodeCompletionServices(libraryServicesCore);
+            var completions = codeCompletionServices.GetCompletionsOnType("x : CodeCompletionClass", "x");
+            Assert.AreEqual(5, completions.Count());
         }
 
         [Test]

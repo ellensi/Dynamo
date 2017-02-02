@@ -224,6 +224,15 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Class declarations are not supported in CodeBlock Nodes, only function definitions and assignment statements.
+        /// </summary>
+        public static string ClassDeclarationNotSupported {
+            get {
+                return ResourceManager.GetString("ClassDeclarationNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;}&quot; expected.
         /// </summary>
         public static string closebrace_expected {
@@ -382,15 +391,6 @@ namespace ProtoCore.Properties {
         public static string error {
             get {
                 return ResourceManager.GetString("error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error code: {0}.
-        /// </summary>
-        public static string ErrorCode {
-            get {
-                return ResourceManager.GetString("ErrorCode", resourceCulture);
             }
         }
         
@@ -683,6 +683,15 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid list@level syntax, consider using @L1 for level 1..
+        /// </summary>
+        public static string invalid_Associative_Level {
+            get {
+                return ResourceManager.GetString("invalid_Associative_Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to invalid Associative_LogicalOp.
         /// </summary>
         public static string invalid_Associative_LogicalOp {
@@ -944,6 +953,15 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not an valid function..
+        /// </summary>
+        public static string InvalidFunction {
+            get {
+                return ResourceManager.GetString("InvalidFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to \&quot;{0}\&quot; is not a valid language block identifier, do you mean \&quot;Associative\&quot; or \&quot;Imperative\&quot;?.
         /// </summary>
         public static string InvalidLanguageBlockIdentifier {
@@ -980,7 +998,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Function could not be found on final dispatch (e5235508).
+        ///   Looks up a localized string similar to Internal error, please report: Function could not be found on final dispatch..
         /// </summary>
         public static string kAmbigousMethodDispatch {
             get {
@@ -1115,7 +1133,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Dereferencing a non-pointer. (3f47aacd).
+        ///   Looks up a localized string similar to Internal error, please report: Dereferencing a non-pointer..
         /// </summary>
         public static string kDeferencingNonPointer {
             get {
@@ -1268,7 +1286,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Statement break causes function to abnormally return null. (6ced82a9).
+        ///   Looks up a localized string similar to Internal error, please report: Statement break causes function to abnormally return null..
         /// </summary>
         public static string kInvalidBreakForFunction {
             get {
@@ -1277,11 +1295,20 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Statement continue cause function to abnormally return null. (fd67aaee).
+        ///   Looks up a localized string similar to Internal error, please report: Statement continue cause function to abnormally return null..
         /// </summary>
         public static string kInvalidContinueForFunction {
             get {
                 return ResourceManager.GetString("kInvalidContinueForFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; cannot be used as list level name, consider using L1 for level 1..
+        /// </summary>
+        public static string kInvalidListLevelName {
+            get {
+                return ResourceManager.GetString("kInvalidListLevelName", resourceCulture);
             }
         }
         
@@ -1331,7 +1358,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Method &apos;{0}()&apos; is invoked on an invalid object. (fa006d2b).
+        ///   Looks up a localized string similar to Method &apos;{0}()&apos; is invoked on an invalid object..
         /// </summary>
         public static string kInvokeMethodOnInvalidObject {
             get {
@@ -1376,7 +1403,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error, please report: Method resolution failure on: {0}() - (8bc0db87).
+        ///   Looks up a localized string similar to Internal error, please report: Method resolution failure on: {0}().
         /// </summary>
         public static string kMethodResolutionFailure {
             get {
@@ -2133,11 +2160,20 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Returns true if the specified key is removed from list, otherwise returns false.
+        ///   Looks up a localized string similar to Removes key from list.
         /// </summary>
         public static string RemoveKeys {
             get {
                 return ResourceManager.GetString("RemoveKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removes a copy of array with specified key removed.
+        /// </summary>
+        public static string RemoveKeys1 {
+            get {
+                return ResourceManager.GetString("RemoveKeys1", resourceCulture);
             }
         }
         
@@ -2223,7 +2259,7 @@ namespace ProtoCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Returns the flattened 1D list of the multi-dimensional input list.
+        ///   Looks up a localized string similar to Returns the flattened 1D list of the multi-dimensional input list. If the input is a single value, returns that value..
         /// </summary>
         public static string ReturnsTheFlattened1DList {
             get {

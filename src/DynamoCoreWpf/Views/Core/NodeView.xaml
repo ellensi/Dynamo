@@ -5,6 +5,7 @@
              xmlns:dynui="clr-namespace:Dynamo.UI.Controls"
              xmlns:p="clr-namespace:Dynamo.Wpf.Properties"
              xmlns:configuration="clr-namespace:Dynamo.Configuration;assembly=DynamoCore"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              Height="Auto"
              Width="Auto"
              Name="topControl"
@@ -54,11 +55,10 @@
                 <MenuItem Header="{x:Static p:Resources.ContextMenuLacing}"
                           Visibility="{Binding Path=ArgumentLacing, Converter={StaticResource LacingToVisibilityConverter},Mode=OneWay}">
                     <MenuItem IsCheckable="True"
-                              IsEnabled="False"
-                              IsChecked="{Binding Path=ArgumentLacing,Converter={StaticResource EnumToBoolConverter},ConverterParameter=First,Mode=OneWay}"
+                              IsChecked="{Binding Path=ArgumentLacing,Converter={StaticResource EnumToBoolConverter},ConverterParameter=Auto,Mode=OneWay}"
                               Command="{Binding Path=SetLacingTypeCommand}"
-                              CommandParameter="First"
-                              Header="{x:Static p:Resources.ContextMenuLacingFirst}" />
+                              CommandParameter="Auto"
+                              Header="{x:Static p:Resources.ContextMenuLacingAuto}" />
                     <MenuItem IsCheckable="True"
                               IsChecked="{Binding Path=ArgumentLacing,Converter={StaticResource EnumToBoolConverter},ConverterParameter=Shortest,Mode=OneWay}"
                               Command="{Binding Path=SetLacingTypeCommand}"
@@ -114,6 +114,28 @@
                           Command="{Binding Path=ShowHelpCommand}" />
             </ContextMenu>
         </Grid.ContextMenu>
+
+        <Rectangle Name="frozenBorder"
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="3"
+                Canvas.ZIndex="1"
+                Margin="-5,-5,-5,-5"
+                StrokeDashArray="2"
+                StrokeThickness="3"
+                Opacity=".5"
+                Stroke="#444">
+            <Rectangle.Style>
+                <Style TargetType="{x:Type Rectangle}">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFrozen}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
 
         <Border Name="customNodeBorder0"
                 Grid.Row="0"
@@ -223,6 +245,25 @@
             </Rectangle.ToolTip>
         </Rectangle>
 
+        <Border Name="previewState"
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="3"
+                Canvas.ZIndex="12"
+                Margin="1,1,1,1"
+                Background="#99B8CA"
+                Opacity=".4"
+                Style="{StaticResource SZoomFadePreview}">
+            <Border.Visibility>
+                <Binding Path="IsVisible"
+                         UpdateSourceTrigger="PropertyChanged"
+                         Mode="OneWay"
+                         Converter="{StaticResource InverseBoolToVisibilityConverter}">
+                </Binding>
+            </Border.Visibility>
+        </Border>
+
+
         <TextBlock Name="nickNameBlock"
                    Grid.Row="1"
                    Grid.ColumnSpan="3"
@@ -303,7 +344,8 @@
                     Height="25"
                     Visibility="{Binding ShouldShowGlyphBar, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
 
-            <TextBlock Name="lacingOptionTextBlock"
+            <Grid>
+                <TextBlock Name="lacingOptionTextBlock"
                        Text="{Binding Path=ArgumentLacing, Converter={StaticResource LacingToAbbreviationConverter}}"
                        ToolTip="{Binding Path=ArgumentLacing, Converter={StaticResource LacingToTooltipConverter}}"
                        Visibility="{Binding Path=ArgumentLacing, Converter={StaticResource LacingToVisibilityConverter}}"
@@ -314,7 +356,7 @@
                        VerticalAlignment="Center"
                        Foreground="#99000000"
                        FontWeight="Bold" />
-
+            </Grid>
         </StackPanel>
 
         <Grid Name="PresentationGrid"

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Autodesk.DesignScript.Interfaces;
 using Dynamo.Engine;
+using Dynamo.Graph.Nodes.CustomNodes;
+using Dynamo.Graph.Nodes.ZeroTouch;
 using ProtoCore.Mirror;
 
 namespace Dynamo.Graph.Nodes
@@ -94,6 +97,22 @@ namespace Dynamo.Graph.Nodes
             return results;
         }
 
+        internal static string GetOriginalName(this NodeModel node)
+        {
+            if (node == null) return string.Empty;
+
+            var function = node as DSFunctionBase;
+            if (function != null)
+                return function.Controller.Definition.DisplayName;
+
+            var nodeType = node.GetType();
+            var elNameAttrib = nodeType.GetCustomAttributes<NodeNameAttribute>(false).FirstOrDefault();
+            if (elNameAttrib != null)
+                return elNameAttrib.Name;
+
+            return nodeType.FullName;
+        }
+
         private static void GetGraphicItemsFromMirrorData(MirrorData mirrorData, List<IGraphicItem> graphicItems)
         {
             if (mirrorData == null) return;
@@ -117,7 +136,7 @@ namespace Dynamo.Graph.Nodes
         private static IEnumerable<string> GetAllOutportAstIdentifiers(this NodeModel node)
         {
             var ids = new List<string>();
-            for (var i = 0; i < node.OutPortData.Count; ++i)
+            for (var i = 0; i < node.OutPorts.Count; ++i)
             {
                 var id = node.GetOneOutportAstIdentifier(i);
                 if (!string.IsNullOrEmpty(id))

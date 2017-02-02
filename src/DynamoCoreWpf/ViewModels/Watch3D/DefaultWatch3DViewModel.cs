@@ -54,7 +54,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
     /// rendering by various render targets. The base class handles the registration
     /// of all necessary event handlers on models, workspaces, and nodes.
     /// </summary>
-    public class DefaultWatch3DViewModel : NotificationObject, IWatch3DViewModel
+    public class DefaultWatch3DViewModel : NotificationObject, IWatch3DViewModel, IDisposable, IWatchPreferenceProperties
     {
         protected readonly IDynamoModel model;
         protected readonly IScheduler scheduler;
@@ -67,7 +67,11 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
         protected List<NodeModel> recentlyAddedNodes = new List<NodeModel>();
         protected bool active;
         protected bool isGridVisible;
-        private readonly List<IRenderPackage> currentTaggedPackages = new List<IRenderPackage>();
+
+        /// <summary>
+        /// Represents the name of current Watch3DViewModel which will be saved in preference settings
+        /// </summary>
+        public virtual string PreferenceWatchName { get { return "IsBackgroundPreviewActive"; } }
 
         /// <summary>
         /// A flag which indicates whether this Watch3DView should process
@@ -85,8 +89,11 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
                 }
 
                 active = value;
-                preferences.IsBackgroundPreviewActive = active;
-
+                if(preferences is IBackgroundPreviewPreference)
+                {
+                   (preferences as IBackgroundPreviewPreference).SetIsBackgroundPreviewActive(PreferenceWatchName, value);
+                }
+               
                 RaisePropertyChanged("Active");
 
                 OnActiveStateChanged();
@@ -138,6 +145,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
             set
             {
                 canNavigateBackground = value;
+                Dynamo.Logging.Analytics.TrackScreenView(canNavigateBackground ? "Geometry" : "Nodes");
                 RaisePropertyChanged("CanNavigateBackground");
             }
         }
@@ -231,8 +239,8 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
             engineManager = parameters.EngineControllerManager;
 
             Name = Resources.BackgroundPreviewDefaultName;
-            Active = parameters.Preferences.IsBackgroundPreviewActive;
             isGridVisible = parameters.Preferences.IsBackgroundGridVisible;
+            active = parameters.Preferences.IsBackgroundPreviewActive;
             logger = parameters.Logger;
 
             RegisterEventHandlers();
@@ -271,8 +279,6 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
 
         protected virtual void OnActiveStateChanged()
         {
-            preferences.IsBackgroundPreviewActive = active;
-
             UnregisterEventHandlers();
             OnClear();
         }
@@ -498,6 +504,15 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
             // Override in inherited classes.
         }
 
+        /// <summary>
+        /// Remove the labels (in Watch3D View) for geometry once the Watch node is disconnected
+        /// </summary>
+        /// <param name="path"></param>
+        public virtual void ClearPathLabel(string path)
+        {
+            // Override in inherited classes.
+        }
+
         public void Invoke(Action action)
         {
             var dynamoViewModel = viewModel as DynamoViewModel;
@@ -575,7 +590,11 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
 
         protected virtual void OnRenderPackagesUpdated(NodeModel node, IEnumerable<IRenderPackage> packages)
         {
-            AddGeometryForRenderPackages(packages);
+            RemoveGeometryForNode(node);
+            if(packages.Any())
+            {
+                AddGeometryForRenderPackages(packages);
+            }
         }
 
         /// <summary>
@@ -704,8 +723,6 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
                 return;
 
             CanNavigateBackground = !CanNavigateBackground;
-
-            InstrumentationLogger.LogAnonymousScreen(CanNavigateBackground ? "Geometry" : "Nodes");
         }
 
         protected virtual bool CanToggleCanNavigateBackground(object parameter)
@@ -724,5 +741,15 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
         } 
 
         #endregion
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

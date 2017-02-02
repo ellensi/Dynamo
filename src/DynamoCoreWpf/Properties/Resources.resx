@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -133,6 +133,45 @@
     <value>(Up-to-date)</value>
     <comment>To indicate Dynamo is up to date</comment>
   </data>
+  <data name="ChangeScaleFactorPromptCaptionText" xml:space="preserve">
+    <value>What is the range of geometry sizes that you will be working on?</value>
+  </data>
+  <data name="ChangeScaleFactorPromptDescriptionBox" xml:space="preserve">
+    <value>Numerical range shown here denote numbers in the following unit:</value>
+  </data>
+  <data name="ChangeScaleFactorPromptDescriptionContent0" xml:space="preserve">
+    <value>Use this working range to model objects the size of a city block that can stretch a few kilometers and with no more accuracy than a millimeter.</value>
+  </data>
+  <data name="ChangeScaleFactorPromptDescriptionContent1" xml:space="preserve">
+    <value>Use this working range to model objects no larger than a truck and that can be built to manufacturing tolerances.</value>
+  </data>
+  <data name="ChangeScaleFactorPromptDescriptionContent2" xml:space="preserve">
+    <value>Use this working range to model precision parts no smaller than a few microns but no larger than a millimeter.</value>
+  </data>
+  <data name="ChangeScaleFactorPromptDescriptionDefaultSetting" xml:space="preserve">
+    <value>Default Setting:</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitCm" xml:space="preserve">
+    <value>Centimeters (cm)</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitM" xml:space="preserve">
+    <value>Meters (m)</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitMm" xml:space="preserve">
+    <value>Millimeters (mm)</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitsNumberFormatCm" xml:space="preserve">
+    <value>{0} cm</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitsNumberFormatM" xml:space="preserve">
+    <value>{0} m</value>
+  </data>
+  <data name="ChangeScaleFactorPromptUnitsNumberFormatMm" xml:space="preserve">
+    <value>{0} mm</value>
+  </data>
+  <data name="ChangeScaleFactorPromptWindowTitle" xml:space="preserve">
+    <value>Change Geometry Scaling Factor</value>
+  </data>
   <data name="ContextMenuEditCustomNode" xml:space="preserve">
     <value>Edit Custom Node...</value>
     <comment>Context menu item</comment>
@@ -166,7 +205,7 @@
     <comment>Context menu item</comment>
   </data>
   <data name="ContextMenuNodesFromSelection" xml:space="preserve">
-    <value>New Node F_rom Selection</value>
+    <value>Create Custom Node</value>
     <comment>Context menu item</comment>
   </data>
   <data name="ContextMenuNodeToCode" xml:space="preserve">
@@ -265,8 +304,8 @@
     <value>_Copy</value>
     <comment>Edit menu | Copy</comment>
   </data>
-  <data name="DynamoViewEditMenuCreateNodeFromSelection" xml:space="preserve">
-    <value>_Create Node From Selection</value>
+  <data name="DynamoViewEditMenuCreateCustomNode" xml:space="preserve">
+    <value>_Create Custom Node</value>
     <comment>Edit menu | Create custom node from selected nodes</comment>
   </data>
   <data name="DynamoViewEditMenuCreateNote" xml:space="preserve">
@@ -559,6 +598,14 @@ It does not contain your graph or any personal data</value>
     <value>Volume Display Units</value>
     <comment>Setting menu | Volume unit display</comment>
   </data>
+  <data name="DynamoViewSettingExperimental" xml:space="preserve">
+    <value>Experimental</value>
+    <comment>Setting menu | Experimental</comment>
+  </data>
+  <data name="DynamoViewSettingEnableTSplineNodes" xml:space="preserve">
+    <value>Enable T-Spline nodes (requires relaunch of Dynamo)</value>
+    <comment>Setting menu | Experimental | Enable T-Spline nodes</comment>
+  </data>
   <data name="DynamoViewToolbarExportButtonTooltip" xml:space="preserve">
     <value>Export Workspace As Image</value>
     <comment>Toolbar export button tooltip</comment>
@@ -752,6 +799,9 @@ It does not contain your graph or any personal data</value>
   <data name="StartPageDiscussionForum" xml:space="preserve">
     <value>Discussion forum</value>
   </data>
+  <data name="StartPageDynamoDictionary" xml:space="preserve">
+    <value>Dynamo Dictionary</value>
+  </data>
   <data name="StartPageFiles" xml:space="preserve">
     <value>FILES</value>
   </data>
@@ -869,6 +919,7 @@ It does not contain your graph or any personal data</value>
     <value>You have unsaved changes to custom node workspace: "{0}".
 
 Would you like to save your changes?</value>
+    <comment>Message box content</comment>
   </data>
   <data name="MessageConfirmToSaveHomeWorkSpace" xml:space="preserve">
     <value>You have unsaved changes to the Home workspace.
@@ -954,7 +1005,9 @@ You can always re-deprecate the package.</value>
     <value>{0} needs to uninstall {1} to continue, but cannot as one of its types appears to be in use.  Try restarting {0}.</value>
   </data>
   <data name="MessageUninstallToContinue2" xml:space="preserve">
-    <value>{0} needs to uninstall {1} to continue but it contains binaries already loaded into Dynamo.  It's now marked for removal, but you'll need to first restart {0}.</value>
+    <value>{2} has dependencies. To install {2}, {0} needs to first uninstall the following dependent packages: {1}. Restart {0} to complete the uninstall, then try and download {2} again.
+
+Uninstall the following dependent packages: {1}?</value>
   </data>
   <data name="OKButton" xml:space="preserve">
     <value>OK</value>
@@ -1733,10 +1786,6 @@ Do you want to install the latest Dynamo update?</value>
   <data name="DynamoViewSettingsMenuShowEdges" xml:space="preserve">
     <value>Show Edges</value>
   </data>
-  <data name="DynamoViewSettingsMenuHidePreviewBubbles" xml:space="preserve">
-    <value>Hide Preview Bubbles</value>
-    <comment>Settings menu | Hide preview bubbles</comment>
-  </data>
   <data name="DynamoViewSettingsMenuShowPreviewBubbles" xml:space="preserve">
     <value>Show Preview Bubbles</value>
     <comment>Settings menu | Show preview bubbles</comment>
@@ -1991,6 +2040,9 @@ Do you want to install the latest Dynamo update?</value>
   <data name="PreviewListLabel" xml:space="preserve">
     <value>List</value>
   </data>
+  <data name="NullString" xml:space="preserve">
+    <value>null</value>
+  </data>
   <data name="InvalidTimeZoneMessage" xml:space="preserve">
     <value>Could not sign in at this moment. Check the date, time and time zone settings and try to sign in again.</value>
   </data>
@@ -2002,5 +2054,105 @@ Next assemblies were loaded several times:
   <data name="MessageFailedToAddFile" xml:space="preserve">
     <value>Failed to add file: {0}</value>
     <comment>Message box content</comment>
+  </data>
+  <data name="MessageConfirmToSaveReadOnlyCustomNode" xml:space="preserve">
+    <value>We can't save "{0}" because the file is read only. To keep your changes, you'll need to save it with a new name or in a different location.</value>
+    <comment>Message box content</comment>
+  </data>
+  <data name="TabFileNameReadOnlyPrefix" xml:space="preserve">
+    <value>[Read-Only] </value>
+  </data>
+  <data name="InCanvasFitViewButtonToolTip" xml:space="preserve">
+    <value>Zoom to Fit</value>
+    <comment>Zoom to Fit</comment>
+  </data>
+  <data name="InCanvasOrbitButtonToolTip" xml:space="preserve">
+    <value>Orbit</value>
+    <comment>Orbit</comment>
+  </data>
+  <data name="InCanvasPanButtonToolTip" xml:space="preserve">
+    <value>Pan</value>
+    <comment>Pan</comment>
+  </data>
+  <data name="InCanvasZoomInButtonToolTip" xml:space="preserve">
+    <value>Zoom In</value>
+    <comment>Zoom In</comment>
+  </data>
+  <data name="InCanvasZoomOutButtonToolTip" xml:space="preserve">
+    <value>Zoom Out</value>
+    <comment>Zoom Out</comment>
+  </data>
+  <data name="MessageErrorOpeningFileGeneral" xml:space="preserve">
+    <value>Error Opening File</value>
+    <comment>Notification Center Title</comment>
+  </data>
+  <data name="DynamoViewSettingsMenuChangeScaleFactor" xml:space="preserve">
+    <value>Geometry Scaling...</value>
+    <comment>Settings menu | Geometry Scaling</comment>
+  </data>
+  <data name="ContextMenuLacingAuto" xml:space="preserve">
+    <value>Auto</value>
+    <comment>Auto lacing</comment>
+  </data>
+  <data name="LacingAutoToolTip" xml:space="preserve">
+    <value>No replication guide will be added.</value>
+  </data>
+  <data name="UseLevelKeepListStructureHint" xml:space="preserve">
+    <value>Keep 1 input list's nesting</value>
+  </data>
+  <data name="UseLevelKeepListStructurePopupMenuItem" xml:space="preserve">
+    <value>Keep list structure</value>
+  </data>
+  <data name="UseLevelPopupMenuItem" xml:space="preserve">
+    <value>Use Levels</value>
+  </data>
+  <data name="DirectoryNotFound" xml:space="preserve">
+    <value>Directory Not Found</value>
+  </data>
+  <data name="PackageFolderNotAccessible" xml:space="preserve">
+    <value>A problem occurred when trying to install the package. Dynamo is unable to obtain read/write access to
+{0}</value>
+  </data>
+  <data name="PackageNotExisted" xml:space="preserve">
+    <value>The root directory of the package does not exist. Please try and re-install the package.</value>
+  </data>
+  <data name="UnableToAccessPackageDirectory" xml:space="preserve">
+    <value>Unable To Access Package Directory</value>
+  </data>
+  <data name="DynamoViewFileMenuExport3DAsImage" xml:space="preserve">
+    <value>_Export Background 3D Preview as Image...</value>
+    <comment>File menu | Export Background 3D Preview as image</comment>
+  </data>
+  <data name="DynamoViewToolbarExport3DButtonTooltip" xml:space="preserve">
+    <value>Export Background Preview As Image</value>
+    <comment>Toolbar export button tooltip</comment>
+  </data>
+  <data name="ScreenShotFrom3DParameter" xml:space="preserve">
+    <value>screenshot_3D</value>
+  </data>
+  <data name="ScreenShotFrom3DShortcutParameter" xml:space="preserve">
+    <value>screenshot_3D_shortcut</value>
+  </data>
+  <data name="FileNotPublishCaption" xml:space="preserve">
+    <value>Publish Fail!</value>
+  </data>
+  <data name="FileNotPublishMessage" xml:space="preserve">
+    <value>File(s) were not found or are contained inside of a package. Please only add files that are located outside of packages.
+
+Failed to publish file(s): 
+{0}</value>
+  </data>
+  <data name="PublishPackageDialogCaption" xml:space="preserve">
+    <value>Published Successfully</value>
+  </data>
+  <data name="PublishPackageMessage" xml:space="preserve">
+    <value>Package published successfully. 
+Want to publish a different package?</value>
+  </data>
+  <data name="SolutionToFolderNotWritatbleError" xml:space="preserve">
+    <value>Please update the permissions or go to 'Settings &gt; Manage Node and Package Paths...' to change your default directory.</value>
+  </data>
+  <data name="DynamoViewHelpDictionary" xml:space="preserve">
+    <value>Open Dynamo Dictionary</value>
   </data>
 </root>

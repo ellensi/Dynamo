@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using Dynamo.Core;
+﻿using Dynamo.Core;
 using Dynamo.Engine;
 using Dynamo.Engine.CodeGeneration;
 using Dynamo.Engine.NodeToCode;
@@ -24,6 +17,13 @@ using Dynamo.Properties;
 using Dynamo.Selection;
 using Dynamo.Utilities;
 using ProtoCore.Namespace;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Xml;
 using Utils = Dynamo.Graph.Nodes.Utilities;
 
 namespace Dynamo.Graph.Workspaces
@@ -34,6 +34,7 @@ namespace Dynamo.Graph.Workspaces
     /// </summary>
     public abstract class WorkspaceModel : NotificationObject, ILocatable, IUndoRedoRecorderClient, ILogSource, IDisposable, IWorkspaceModel
     {
+
         /// <summary>
         /// Represents maximum value of workspace zoom
         /// </summary>
@@ -79,13 +80,16 @@ namespace Dynamo.Graph.Workspaces
         private string author = "None provided";
         private string description;
         private bool hasUnsavedChanges;
+        private bool isReadOnly;
         private readonly List<NodeModel> nodes;
         private readonly List<NoteModel> notes;
         private readonly List<AnnotationModel> annotations;
         private readonly List<PresetModel> presets;
         private readonly UndoRedoRecorder undoRecorder;
+        private static List<ModelBase> savedModels = null;
+        private double scaleFactor = 1.0;
         private bool hasNodeInSyncWithDefinition;
-        private Guid guid;
+        protected Guid guid;
 
         /// <summary>
         /// This is set to true after a workspace is added.
@@ -418,11 +422,35 @@ namespace Dynamo.Graph.Workspaces
         /// </summary>
         public bool HasUnsavedChanges
         {
-            get { return hasUnsavedChanges; }
+            get 
+            {
+                if(!string.IsNullOrEmpty(this.FileName)) // if there is a filename
+                {
+                    if (!File.Exists(this.FileName)) // but the filename is invalid
+                    {
+                        this.fileName = string.Empty;
+                        hasUnsavedChanges = true;
+                    }
+                }
+
+                return hasUnsavedChanges;
+            }
             set
             {
                 hasUnsavedChanges = value;
                 RaisePropertyChanged("HasUnsavedChanges");
+            }
+        }
+
+        /// <summary>
+        /// Returns if current workspace is readonly.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get { return isReadOnly; }
+            set
+            {
+                isReadOnly = value;
             }
         }
 
@@ -491,7 +519,7 @@ namespace Dynamo.Graph.Workspaces
             {
                 return nodes.SelectMany(
                     node => node.OutPorts.SelectMany(port => port.Connectors))
-                    .Distinct();
+                    .Distinct().ToList();
             }
         }
 
@@ -691,6 +719,23 @@ namespace Dynamo.Graph.Workspaces
         public Guid Guid
         {
             get { return guid; }
+            internal set { guid = value; }
+        }
+
+        /// <summary>
+        /// The geometry scale factor specific to the workspace obtained from user input
+        /// when selecting the scale of the model with which he/she is working. 
+        /// This is used by ProtoGeometry to scale geometric values appropriately before passing them to ASM.
+        /// This property is set either when reading the setting from a DYN file or when the setting is updated from the UI.
+        /// </summary>
+        public double ScaleFactor
+        {
+            get { return scaleFactor; }
+            internal set
+            {
+                scaleFactor = value;
+                WorkspaceEvents.OnWorkspaceSettingsChanged(scaleFactor);
+            }
         }
 
         #endregion
@@ -722,6 +767,7 @@ namespace Dynamo.Graph.Workspaces
             Zoom = info.Zoom;
 
             HasUnsavedChanges = false;
+            IsReadOnly = DynamoUtilities.PathHelper.IsReadOnlyPath(fileName);
             LastSaved = DateTime.Now;
 
             WorkspaceVersion = AssemblyHelper.GetDynamoVersion();
@@ -779,18 +825,22 @@ namespace Dynamo.Graph.Workspaces
         {
             this.workspaceLoaded = false;
             foreach (var node in Nodes)
+            {
                 DisposeNode(node);
+            }
 
             foreach (var connector in Connectors)
+            {
                 OnConnectorDeleted(connector);
+            }
 
             WorkspaceEvents.WorkspaceAdded -= computeUpstreamNodesWhenWorkspaceAdded;
 
             var handler = Disposed;
-            if (handler != null)
-                handler();
-
+            if (handler != null) handler();
             Disposed = null;
+
+            WorkspaceEvents.WorkspaceAdded -= computeUpstreamNodesWhenWorkspaceAdded;
         }
 
         #endregion
@@ -849,6 +899,8 @@ namespace Dynamo.Graph.Workspaces
             X = 0.0;
             Y = 0.0;
             Zoom = 1.0;
+            // Reset the workspace offset
+            OnCurrentOffsetChanged(this, new PointEventArgs(new Point2D(X, Y)));
             workspaceLoaded = true;
         }
 
@@ -877,7 +929,7 @@ namespace Dynamo.Graph.Workspaces
                 Log(ex.Message);
                 Log(ex.StackTrace);
                 Debug.WriteLine(ex.Message + " : " + ex.StackTrace);
-                return false;
+                throw (ex);
             }
 
             return true;
@@ -945,7 +997,7 @@ namespace Dynamo.Graph.Workspaces
         /// This method does not raise a NodesModified event. (LC notes this is clearly not true)
         /// </summary>
         /// <param name="model">The node which is being removed from the worksapce.</param>
-        internal void RemoveNode(NodeModel model)
+        internal void RemoveAndDisposeNode(NodeModel model, bool dispose = true)
         {
             lock (nodes)
             {
@@ -953,20 +1005,24 @@ namespace Dynamo.Graph.Workspaces
             }
 
             OnNodeRemoved(model);
-            DisposeNode(model);
+
+            if (dispose)
+            {
+                DisposeNode(model);
+            }
         }
 
-        protected virtual void DisposeNode(NodeModel model)
+        protected virtual void DisposeNode(NodeModel node)
         {
-            var functionNode = model as Function;
+            var functionNode = node as Function;
             if (functionNode != null)
             {
                 functionNode.Controller.SyncWithDefinitionStart -= OnSyncWithDefinitionStart;
                 functionNode.Controller.SyncWithDefinitionEnd -= OnSyncWithDefinitionEnd;
             }
-            model.ConnectorAdded -= OnConnectorAdded;
-            model.Modified -= NodeModified;
-            model.Dispose();
+            node.ConnectorAdded -= OnConnectorAdded;
+            node.Modified -= NodeModified;
+            node.Dispose();
         }
 
         private void AddNote(NoteModel note)
@@ -1562,7 +1618,7 @@ namespace Dynamo.Graph.Workspaces
             return
                 Nodes.Where(
                     node =>
-                        node.OutPortData.Any() && node.OutPorts.Any(port => !port.Connectors.Any()));
+                        node.OutPorts.Any() && node.OutPorts.Any(port => !port.Connectors.Any()));
         }
 
         /// <summary>
@@ -1728,9 +1784,13 @@ namespace Dynamo.Graph.Workspaces
                 Utils.SetDocumentXmlPath(document, string.Empty);
                 document.Save(targetFilePath);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                return false;
+                throw (ex);
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                throw (ex);
             }
 
             FileName = targetFilePath;
@@ -1767,6 +1827,7 @@ namespace Dynamo.Graph.Workspaces
                 root.SetAttribute("X", X.ToString(CultureInfo.InvariantCulture));
                 root.SetAttribute("Y", Y.ToString(CultureInfo.InvariantCulture));
                 root.SetAttribute("zoom", Zoom.ToString(CultureInfo.InvariantCulture));
+                root.SetAttribute("ScaleFactor", ScaleFactor.ToString(CultureInfo.InvariantCulture));
                 root.SetAttribute("Name", Name);
                 root.SetAttribute("Description", Description);
 
@@ -1863,7 +1924,7 @@ namespace Dynamo.Graph.Workspaces
                 // a DSVarArgFunction or a CodeBlockNodeModel into a list.
                 var nodeGuids =
                     Nodes.Where(
-                        n => n is DSFunction || n is DSVarArgFunction || n is CodeBlockNodeModel)
+                        n => n is DSFunction || n is DSVarArgFunction || n is CodeBlockNodeModel || n is Function)
                         .Select(n => n.GUID);
 
                 var nodeTraceDataList = runtimeCore.RuntimeData.GetTraceDataForNodes(nodeGuids, runtimeCore.DSExecutable);
@@ -2016,7 +2077,7 @@ namespace Dynamo.Graph.Workspaces
                         totalX += node.X;
                         totalY += node.Y;
                         undoHelper.RecordDeletion(node);
-                        RemoveNode(node);
+                        RemoveAndDisposeNode(node);
                         #endregion
                     }
                     #endregion
@@ -2144,6 +2205,14 @@ namespace Dynamo.Graph.Workspaces
 
             using (recorder.BeginActionGroup())
             {
+                if (null != savedModels)
+                {
+                    foreach (var modelPair in savedModels)
+                    {
+                        recorder.RecordDeletionForUndo(modelPair);
+                    }
+                    savedModels = null;
+                }
                 foreach (var modelPair in models)
                 {
                     switch (modelPair.Value)
@@ -2244,7 +2313,7 @@ namespace Dynamo.Graph.Workspaces
                         // Take a snapshot of the node before it goes away.
                         undoRecorder.RecordDeletionForUndo(node);
 
-                        RemoveNode(node);
+                        RemoveAndDisposeNode(node);
                     }
                     else if (model is ConnectorModel)
                     {
@@ -2255,6 +2324,21 @@ namespace Dynamo.Graph.Workspaces
                 RequestRun();
 
             } // Conclude the deletion.
+        }
+
+        internal void DeleteSavedModels()
+        {
+            if (null != savedModels)
+            {
+                RecordAndDeleteModels(savedModels);
+                savedModels = null;
+            }
+        }
+
+        internal void SaveModelsForUndo(List<ModelBase> models)
+        {
+            // save the models for deletion later in one action group
+            savedModels = models;
         }
 
         internal void RecordGroupModelBeforeUngroup(AnnotationModel annotation)
@@ -2317,7 +2401,7 @@ namespace Dynamo.Graph.Workspaces
             }
             else if (model is NodeModel)
             {
-                RemoveNode(model as NodeModel);
+                RemoveAndDisposeNode(model as NodeModel);
             }
             else
             {

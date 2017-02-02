@@ -4,7 +4,10 @@ using ProtoCore.DSASM;
 using ProtoCore.Namespace;
 using ProtoCore.Properties;
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ProtoCore.Utils
@@ -225,6 +228,20 @@ namespace ProtoCore.Utils
             return core.BuildStatus;
         }
 
+        internal static string ToLiteral(string input)
+        {
+            using (var writer = new StringWriter())
+            {
+                using (var provider = CodeDomProvider.CreateProvider("CSharp"))
+                {
+                    provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, new CodeGeneratorOptions { IndentString = "\t" });
+                    var literString = writer.ToString();
+                    literString = literString.Replace(string.Format("\" +{0}\t\"", Environment.NewLine), "");
+                    return literString.Substring(1, literString.Length - 2);
+                }
+            }
+        }
+
         public static bool TryLoadAssemblyIntoCore(Core core, string assemblyPath)
         {
             bool parsingPreloadFlag = core.IsParsingPreloadedAssembly;
@@ -233,7 +250,7 @@ namespace ProtoCore.Utils
             core.IsParsingCodeBlockNode = false;
 
             int blockId;
-            string importStatement = @"import (""" + assemblyPath + @""");";
+            string importStatement = @"import (""" + ToLiteral(assemblyPath) + @""");";
 
             core.ResetForPrecompilation();
             var status = PreCompile(importStatement, core, null, out blockId);
@@ -354,7 +371,7 @@ namespace ProtoCore.Utils
                 }
                 catch
                 {
-                    // For modifier blocks, language blocks, etc. that are currently ignored
+                    // For class declarations, import statements etc. that are currently ignored
                 }
             }
 
@@ -384,11 +401,15 @@ namespace ProtoCore.Utils
                 Validity.Assert(n != null);
 
                 // Append the temporaries only if it is not a function def or class decl
-                bool isFunctionOrClassDef = n is FunctionDefinitionNode || n is ClassDeclNode;
+                bool isFunctionOrClassDef = n is FunctionDefinitionNode;
 
                 if (n is ImportNode)
                 {
                     core.BuildStatus.LogSemanticError(Resources.ImportStatementNotSupported);
+                }
+                else if (n is ClassDeclNode)
+                {
+                    core.BuildStatus.LogSemanticError(Resources.ClassDeclarationNotSupported);
                 }
                 else if (isFunctionOrClassDef)
                 {

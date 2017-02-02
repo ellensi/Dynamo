@@ -20,7 +20,7 @@ namespace Dynamo
 {
     public class DynamoModelTestBase : DSEvaluationUnitTestBase
     {
-        protected DynamoModel CurrentDynamoModel { get; private set; }
+        protected DynamoModel CurrentDynamoModel { get; set; }
 
         protected Preloader preloader;
         protected TestPathResolver pathResolver;
@@ -63,6 +63,7 @@ namespace Dynamo
         {
             var assemblyPath = Assembly.GetExecutingAssembly().Location;
             preloader = new Preloader(Path.GetDirectoryName(assemblyPath));
+
             preloader.Preload();
 
             var preloadedLibraries = new List<string>();

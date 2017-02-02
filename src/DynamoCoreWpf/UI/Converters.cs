@@ -31,6 +31,7 @@ using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Point = System.Windows.Point;
 using TabControl = System.Windows.Controls.TabControl;
 using Thickness = System.Windows.Thickness;
+using System.Net;
 
 namespace Dynamo.Controls
 {
@@ -401,8 +402,11 @@ namespace Dynamo.Controls
         {
             if (value is string && !string.IsNullOrEmpty(value as string))
             {
-                // convert to path, get file name
-                return Path.GetFileName((string)value);
+                // Convert to path, get file name. If read-only file, append [Read-Only].
+                if (DynamoUtilities.PathHelper.IsReadOnlyPath((string)value))
+                    return Resources.TabFileNameReadOnlyPrefix + Path.GetFileName((string)value);
+                else
+                    return Path.GetFileName((string)value);
             }
 
             return "Unsaved";
@@ -945,6 +949,13 @@ namespace Dynamo.Controls
         }
     }
 
+    /// <summary>
+    /// Obsolete class of ShowHideConsoleMenuItemConverter
+    /// Using of this class will produce compile warnings
+    /// TODO: To be removed in Dynamo 2.0
+    /// TODO: Resource String DynamoViewViewMenuHideConsole to be removed in Dynamo 2.0
+    /// </summary>
+    [System.Obsolete("This class is obsolete.")]
     public class ShowHideConsoleMenuItemConverter : IValueConverter
     {
         #region IValueConverter Members
@@ -971,20 +982,51 @@ namespace Dynamo.Controls
         #endregion
     }
 
+    public class ConsoleHeightToBooleanConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if ((int)value > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+
+        #endregion
+    }
+
+
+    /// <summary>
+    /// Obsolete class of ShowHidePreviewBubblesConverter
+    /// Using of this class will produce compile warnings
+    /// TODO: To be removed in Dynamo 2.0
+    /// </summary>
+    [System.Obsolete("This class is obsolete, string converter for Preview Bubble Display Option only returns single value now. ")]
     public class ShowHidePreviewBubblesConverter : IValueConverter
     {
         #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool) value
-                ? Resources.DynamoViewSettingsMenuHidePreviewBubbles
-                : Resources.DynamoViewSettingsMenuShowPreviewBubbles;
+            return Resources.DynamoViewSettingsMenuShowPreviewBubbles;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (string)value == Resources.DynamoViewSettingsMenuHidePreviewBubbles;
+            return (string)value == Resources.DynamoViewSettingsMenuShowPreviewBubbles;
         }
 
         #endregion
@@ -1344,8 +1386,25 @@ namespace Dynamo.Controls
             LacingStrategy strategy = (LacingStrategy)value;
             if (strategy == LacingStrategy.Disabled)
                 return Visibility.Collapsed;
+            else
+                return Visibility.Visible;
+        }
 
-            return Visibility.Visible;
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class AutoLacingToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            LacingStrategy strategy = (LacingStrategy)value;
+            if (strategy == LacingStrategy.Auto)
+                return Visibility.Visible;
+            else
+                return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -1364,6 +1423,8 @@ namespace Dynamo.Controls
             {
                 case LacingStrategy.Disabled:
                     return "";
+                case LacingStrategy.Auto:
+                    return "AUTO";
                 case LacingStrategy.CrossProduct:
                     return "XXX";
                 case LacingStrategy.First:
@@ -1393,10 +1454,10 @@ namespace Dynamo.Controls
             {
                 case LacingStrategy.Disabled:
                     return Resources.LacingDisabledToolTip;
+                case LacingStrategy.Auto:
+                    return Resources.LacingAutoToolTip;
                 case LacingStrategy.CrossProduct:
                     return Resources.LacingCrossProductToolTip;
-                case LacingStrategy.First:
-                    return Resources.LacingFirstToolTip;
                 case LacingStrategy.Longest:
                     return Resources.LacingLongestToolTip;
                 case LacingStrategy.Shortest:
@@ -1416,7 +1477,7 @@ namespace Dynamo.Controls
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            double zoom = System.Convert.ToDouble(value);
+            double zoom = System.Convert.ToDouble(value, culture);
 
             if (zoom < .5)
                 return Visibility.Hidden;
@@ -1600,7 +1661,7 @@ namespace Dynamo.Controls
             if (value == null)
                 return Resources.FilePathConverterNoFileSelected;
 
-            var str = HttpUtility.UrlDecode(value.ToString());
+            var str = value.ToString();
 
             if (string.IsNullOrEmpty(str))
                 return Resources.FilePathConverterNoFileSelected;
@@ -1655,7 +1716,7 @@ namespace Dynamo.Controls
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return HttpUtility.UrlEncode(value.ToString());
+            return value.ToString();
         }
     }
 
@@ -2029,6 +2090,25 @@ namespace Dynamo.Controls
         }
     }
 
+    /// <summary>
+    /// This converter was created for AboutWindow.xaml in order to accomodate the changes required
+    /// for the display for both Core/Host versions. 
+    /// </summary>
+    public class NullValueToGridRow1Converter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return 1;
+            return 2;
+        }
+
+        public object ConvertBack(
+            object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     // Depending on the number of points in FullCategoryName margin will be done.
     // E.g. Geometry -> Margin="5,0,0,0"
     // E.g. RootCategory.Namespace1.Namespace2 -> Margin="45,0,20,0"
@@ -2189,8 +2269,8 @@ namespace Dynamo.Controls
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var fontsize = System.Convert.ToDouble(value);
-            var param = System.Convert.ToDouble(parameter);
+            var fontsize = System.Convert.ToDouble(value, culture);
+            var param = System.Convert.ToDouble(parameter, culture);
 
             return fontsize == param;            
         }
@@ -2246,8 +2326,8 @@ namespace Dynamo.Controls
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var zoom = System.Convert.ToDouble(values[0]);
-            var fontsize = System.Convert.ToDouble(values[1]);
+            var zoom = System.Convert.ToDouble(values[0], culture);
+            var fontsize = System.Convert.ToDouble(values[1], culture);
 
             var factor = zoom*fontsize;
             if (factor < MinFontFactor)
@@ -2783,4 +2863,89 @@ namespace Dynamo.Controls
                 throw new NotImplementedException();
             }
         }
+
+    /// Converter is used in WatchTree.xaml
+    /// It converts the value of the padding required by each list level label to the required thickness (padding from the left)
+    /// It then supplies the required thickness to the margin property for each label
+    /// </summary>
+    public class LeftThicknessConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is int)
+            {
+                var margin = (int)value == 1 ? new Thickness(4, 3, 0, 0) : new Thickness(2,3,0,0);
+                return margin; 
+            }
+            return new Thickness();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
+
+    /// <summary>
+    /// Converter is used in WatchTree.xaml
+    /// It converts the boolean value of WatchViewModel.IsCollection to the background color of the each listnode label
+    /// </summary>
+    public class ListIndexBackgroundConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((bool) value)
+            {
+                return "Transparent";
+            }
+            return "#aaaaaa";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Converter is used in WatchTree.xaml 
+    /// It converts the boolean value of WatchViewModel.IsCollection to determine the margin of the listnode textblock
+    /// </summary>
+
+    public class ListIndexMarginConverter : IValueConverter
+    { 
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((bool)value)
+            {
+                return new Thickness(0,0,4,0);
+            }
+            return new Thickness (-4,0,4,0);
+        }   
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Converter is used in WatchTree.xaml 
+    /// It converts the boolean value of WatchViewModel.IsTopLevel to determine the margin of the list node label
+    /// </summary>
+
+    public class TopLevelLabelMarginConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((bool)value)
+            {
+                return new Thickness(-4,0,4,0);
+            }
+            return new Thickness(0,0,4,0);
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+}

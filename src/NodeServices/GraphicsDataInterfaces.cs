@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Dynamo.Events;
 
 namespace Autodesk.DesignScript.Interfaces
 {
@@ -217,6 +218,12 @@ namespace Autodesk.DesignScript.Interfaces
     public interface ITransformable
     {
         /// <summary>
+        /// A flag indicating whether the render package has had its Transform property set
+        /// explicitly.
+        /// </summary>
+        bool RequiresCustomTransform { get; set; }
+
+        /// <summary>
         /// A 4x4 matrix that is used to transform all geometry in the render packaage.
         /// </summary>
         double[] Transform  { get; } 
@@ -283,11 +290,19 @@ namespace Autodesk.DesignScript.Interfaces
         /// </summary>
         public bool ShowEdges { get; set; }
 
+        /// <summary>
+        /// The scale factor set in the workspace that must be applied to 
+        /// distance and coordinate values used in rendering only ASM geometry.
+        /// This scale factor is consumed only by LibG in its Tessellate method implementation.
+        /// </summary>
+        internal double ScaleFactor { get; set; }
+
         public TessellationParameters()
         {
             Tolerance = -1;
             MaxTessellationDivisions = 512;
             ShowEdges = false;
+            ScaleFactor = 1.0;
         }
     }
 

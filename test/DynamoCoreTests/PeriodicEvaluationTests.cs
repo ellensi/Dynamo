@@ -53,7 +53,7 @@ namespace Dynamo.Tests
             this.actionId = ActionDict.Register(action);
             this.CanUpdatePeriodically = periodic;
 
-            OutPortData.Add(new PortData("", ""));
+            OutPorts.Add(new PortModel(PortType.Output, this, new PortData("", "")));
             RegisterAllPorts();
         }
 
@@ -120,7 +120,7 @@ namespace Dynamo.Tests
         }
 
         [Test]
-        [Category("Failure")]  //LC: I don't understand how this test isn't incredibly sensitive to execution timing
+        //LC: I don't understand how this test isn't incredibly sensitive to execution timing
         public void StartPeriodicEvaluation_CompletesFewerRunsWhenRunTimeIsGreaterThanEvaluationTime()
         {
             Workspace.RunSettings.RunType = RunType.Periodic;

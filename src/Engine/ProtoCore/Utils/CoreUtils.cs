@@ -303,18 +303,6 @@ namespace ProtoCore.Utils
             return ssaVar.StartsWith(DSASM.Constants.kSSATempPrefix);
         }
 
-        public static bool IsTempVarProperty(string varname)
-        {
-            Validity.Assert(!string.IsNullOrEmpty(varname));
-            return varname.StartsWith(DSASM.Constants.kTempPropertyVar);
-        }
-
-        public static bool IsCompilerGenerated(string varname)
-        {
-            Validity.Assert(!string.IsNullOrEmpty(varname));
-            return varname.StartsWith(DSASM.Constants.kInternalNamePrefix);
-        }
-
         public static bool IsInternalFunction(string methodName)
         {
             Validity.Assert(!string.IsNullOrEmpty(methodName));
@@ -363,13 +351,8 @@ namespace ProtoCore.Utils
                 argList.Exprs.Add(arg);
             }
 
+            var arguments = new List<AssociativeNode>();
 
-            FunctionCallNode funCallNode = new FunctionCallNode();
-            IdentifierNode funcName = new IdentifierNode { Value = Constants.kDotArgMethodName, Name = Constants.kDotArgMethodName };
-            funCallNode.Function = funcName;
-            funCallNode.Name = Constants.kDotArgMethodName;
-
-            NodeUtils.CopyNodeLocation(funCallNode, lhs);
             int rhsIdx = DSASM.Constants.kInvalidIndex;
             string lhsName = string.Empty;
             if (lhs is IdentifierNode)
@@ -396,11 +379,10 @@ namespace ProtoCore.Utils
             }
 
             // The first param to the dot arg (the pointer or the class name)
-            funCallNode.FormalArguments.Add(lhs);
+            arguments.Add(lhs);
 
             // The second param which is the dynamic table index of the function to call
-            var rhs = new IntNode(rhsIdx);
-            funCallNode.FormalArguments.Add(rhs);
+            arguments.Add(new IntNode(rhsIdx));
 
             // The array dimensions
             ExprListNode arrayDimExperList = new ExprListNode();
@@ -425,32 +407,21 @@ namespace ProtoCore.Utils
                 }
             }
 
-            funCallNode.FormalArguments.Add(arrayDimExperList);
+            arguments.Add(arrayDimExperList);
 
             // Number of dimensions
             var dimNode = new IntNode(dimCount);
-            funCallNode.FormalArguments.Add(dimNode);
+            arguments.Add(dimNode);
 
             if (argNum >= 0)
             {
-                funCallNode.FormalArguments.Add(argList);
-                funCallNode.FormalArguments.Add(new IntNode(argNum));
+                arguments.Add(argList);
+                arguments.Add(new IntNode(argNum));
             }
 
-            var funDotCallNode = new FunctionDotCallNode(rhsCall);
-            funDotCallNode.DotCall = funCallNode;
-            funDotCallNode.FunctionCall.Function = rhsCall.Function;
-
-            // Consider the case of "myClass.Foo(a, b)", we will have "DotCall" being 
-            // equal to "myClass" (in terms of its starting line/column), and "rhsCall" 
-            // matching with the location of "Foo(a, b)". For execution cursor to cover 
-            // this whole statement, the final "DotCall" function call node should 
-            // range from "lhs.col" to "rhs.col".
-            // 
-            NodeUtils.SetNodeEndLocation(funDotCallNode.DotCall, rhsCall);
-            NodeUtils.CopyNodeLocation(funDotCallNode, funDotCallNode.DotCall);
-
-
+            var funDotCallNode = new FunctionDotCallNode(rhsCall, arguments);
+            // funDotCallNode.FunctionCall.Function = rhsCall.Function;
+            NodeUtils.SetNodeEndLocation(funDotCallNode, rhsCall);
             return funDotCallNode;
         }
 
@@ -806,42 +777,6 @@ namespace ProtoCore.Utils
                 searchBlock = searchBlock.parent;
             }
             return null;
-        }
-
-        /// <summary>
-        /// Checks if an AST node is a primitive
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        public static bool IsPrimitiveASTNode(AssociativeNode node)
-        {
-            if (node is IntNode
-            || node is DoubleNode
-            || node is BooleanNode)
-            {
-                return true;
-            }
-            return false;
-        }
-
-
-        public static StackValue BuildStackValueForPrimitive(AssociativeNode node)
-        {
-            Validity.Assert(IsPrimitiveASTNode(node) == true);
-
-            if (node is IntNode)
-            {
-                return StackValue.BuildInt((node as IntNode).Value);
-            }
-            else if (node is DoubleNode)
-            {
-                return StackValue.BuildDouble((node as DoubleNode).Value);
-            }
-            else if (node is BooleanNode)
-            {
-                return StackValue.BuildBoolean((node as BooleanNode).Value);
-            }
-            return StackValue.BuildNull();
         }
 
         /// <summary>

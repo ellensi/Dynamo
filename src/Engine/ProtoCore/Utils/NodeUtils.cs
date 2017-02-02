@@ -236,6 +236,10 @@ namespace ProtoCore.Utils
             {
                 return new ProtoCore.AST.ImperativeAST.UnaryExpressionNode(rhsNode as ProtoCore.AST.ImperativeAST.UnaryExpressionNode);
             }
+            else if (rhsNode is AST.ImperativeAST.InlineConditionalNode)
+            {
+                return new AST.ImperativeAST.InlineConditionalNode(rhsNode as AST.ImperativeAST.InlineConditionalNode);
+            }
 
             Validity.Assert(false);
             return null;
@@ -269,15 +273,6 @@ namespace ProtoCore.Utils
 
             node.line = token.line;
             node.col = token.col;
-        }
-
-        public static void SetNodeStartLocation(ProtoCore.AST.Node node, int line, int col)
-        {
-            if (null == node)
-                return;
-
-            node.line = line;
-            node.col = col;
         }
 
         public static void SetNodeStartLocation(ProtoCore.AST.Node node, ProtoCore.AST.Node other)
@@ -362,14 +357,6 @@ namespace ProtoCore.Utils
             }
 
             return (retNode.Value == ProtoCore.DSDefinitions.Keyword.Return);
-        }
-
-        public static bool IsAssignmentNode(ProtoCore.AST.ImperativeAST.ImperativeNode node)
-        {
-            ProtoCore.AST.ImperativeAST.BinaryExpressionNode binaryNode =
-                node as ProtoCore.AST.ImperativeAST.BinaryExpressionNode;
-
-            return (null != binaryNode && (ProtoCore.DSASM.Operator.assign == binaryNode.Optr));
         }
     }
 }
