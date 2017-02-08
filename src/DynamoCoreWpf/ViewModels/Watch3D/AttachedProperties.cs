@@ -12,7 +12,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
     public static class AttachedProperties
     {
         private const float alphaPropertyFactor = 0.5f;
-        private const float transparentFactor = 0.1f;
+        private const float transparentFactor = 0.2f;
 
         /// <summary>
         /// A flag indicating whether the geometry renders as selected.
@@ -149,7 +149,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
         private static void DisplayTransparentPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             obj.SetValue(HasTransparencyProperty, e.NewValue);
-
+            /*
             if (obj is GeometryModel3D && obj.GetType() != typeof(BillboardTextModel3D))
             {
                 var geom = (GeometryModel3D)obj;
@@ -188,7 +188,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
                     geom.Detach();
                     geom.Attach(host);
                 }
-            }
+            }*/
         }
 
         /// <summary>

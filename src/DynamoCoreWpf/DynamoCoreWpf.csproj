@@ -612,22 +612,10 @@
     <Resource Include="UI\Images\Canvas\canvas-button-fit-view-states.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="UI\Images\Canvas\canvas-button-preview-check.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="UI\Images\Canvas\canvas-button-preview-states.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="UI\Images\Canvas\canvas-button-geom-check.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="UI\Images\Canvas\canvas-button-geom-states.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="UI\Images\Canvas\canvas-button-node-check.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="UI\Images\Canvas\canvas-button-node-states.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\Canvas\canvas-button-orbit-check.png" />
@@ -640,6 +628,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\Canvas\canvas-button-pan-states.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\Canvas\canvas-button-selective-check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\Canvas\canvas-button-states.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\Canvas\canvas-button-zoom-in-states.png" />

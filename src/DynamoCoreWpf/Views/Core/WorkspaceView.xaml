@@ -228,34 +228,52 @@
                              RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type controls:DynamoView}}"
                              Converter="{StaticResource BooleanToVisibilityConverter}"/>
                 </StackPanel.Visibility>
-                <ui:ImageCheckBox Width="59"
+                <ui:ImageCheckBox Width="55"
                               Height="30"
-                              Margin="4,4,4,4"
-                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-preview-states.png"
-                              CheckImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-preview-check.png"
+                              Margin="4,4,0,4"
+                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-states.png"
+                              CheckImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-selective-check.png"
                               ToolTip="Selective Geometry Preview">
                     <ui:ImageCheckBox.IsChecked>
                         <Binding Path="DataContext.BackgroundPreviewViewModel.SelectivePreview"
                              RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type controls:DynamoView}}" />
                     </ui:ImageCheckBox.IsChecked>
                 </ui:ImageCheckBox>
-                <ui:ImageCheckBox Width="56"
+                <ui:ImageCheckBox Width="55"
                               Height="30"
-                              Margin="4,4,0,4"
-                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-geom-states.png"
+                              Margin="0,4,0,4"
+                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-states.png"
                               CheckImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-geom-check.png"
                               ToolTip="{x:Static p:Resources.InCanvasGeomButtonToolTip}">
                     <ui:ImageCheckBox.IsChecked>
                         <Binding Path="DataContext.BackgroundPreviewViewModel.CanNavigateBackground"
                              RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type controls:DynamoView}}" />
                     </ui:ImageCheckBox.IsChecked>
+                    <!--ui:ImageCheckBox.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ui:ImageCheckBox}}}"
+                                             Value="True">
+                                    <Setter Property="ui:ImageCheckBox.CheckImage"
+                                            Value="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-geom-check.png" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ui:ImageCheckBox}}}"
+                                             Value="False">
+                                    <Setter Property="ui:ImageCheckBox.CheckImage"
+                                            Value="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-node-check.png" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:ImageCheckBox.Style-->
                 </ui:ImageCheckBox>
                 <ui:ImageCheckBox Width="55"
                               Height="30"
                               Margin="0,4,0,4"
-                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-node-states.png"
+                              StateImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-states.png"
                               CheckImage="/DynamoCoreWpf;component/UI/Images/Canvas/canvas-button-node-check.png"
-                              ToolTip="{x:Static p:Resources.InCanvasNodeButtonToolTip}">
+                              ToolTip="{x:Static p:Resources.InCanvasNodeButtonToolTip}"
+                              Visibility="{Binding Path=DataContext.BackgroundPreviewViewModel.CanNavigateBackground, 
+                                                   Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
                     <ui:ImageCheckBox.IsChecked>
                         <Binding Path="DataContext.BackgroundPreviewViewModel.CanNavigateBackground"
                              RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type controls:DynamoView}}"

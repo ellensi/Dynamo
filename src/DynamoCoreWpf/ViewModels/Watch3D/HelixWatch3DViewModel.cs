@@ -628,7 +628,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
                     foreach (var geometryModel in geometryModels)
                     {
                         geometryModel.Value.SetValue(AttachedProperties.ShowSelectedProperty, false);
-                        geometryModel.Value.SetValue(AttachedProperties.DisplayTransparentProperty, SelectivePreview);
+                        //geometryModel.Value.SetValue(AttachedProperties.DisplayTransparentProperty, SelectivePreview);
                     }
                     return;
 
@@ -819,6 +819,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
 
         protected override void OnSelectivePreviewUpdated()
         {
+            OnSceneItemsChanged();
             Model3DDictionary.Values.OfType<GeometryModel3D>().ToList().
                 ForEach(g => g.SetValue(AttachedProperties.DisplayTransparentProperty, 
                 SelectivePreview && !(bool)g.GetValue(AttachedProperties.ShowSelectedProperty)));
@@ -990,7 +991,7 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
 
                 foreach(GeometryModel3D g in modelValues)
                 {
-                    g.SetValue(AttachedProperties.ShowSelectedProperty, isSelected && !SelectivePreview);
+                    g.SetValue(AttachedProperties.ShowSelectedProperty, isSelected);
                     g.SetValue(AttachedProperties.DisplayTransparentProperty, !isSelected && SelectivePreview);
                 }
 
