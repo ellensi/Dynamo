@@ -48,6 +48,17 @@ namespace Dynamo.ViewModels
 
     public partial class DynamoViewModel : ViewModelBase, IDynamoViewModel
     {
+        public void OnLibraryContainerClicked(string id)
+        {
+            var nodeSearchElement = SearchViewModel.Model.SearchEntries
+                .Where(x => x.CreationName == id).FirstOrDefault();
+            if (nodeSearchElement != null)
+            {
+                var nodeModel = nodeSearchElement.CreateNode();
+                SearchViewModel.OnSearchElementClicked(nodeModel, new Point(0, 0));
+            }
+        }
+
         public int ScaleFactorLog
         {
             get
@@ -416,6 +427,8 @@ namespace Dynamo.ViewModels
 
         public SearchViewModel SearchViewModel { get; private set; }
 
+        public LibraryViewModel LibraryViewModel { get; private set; }
+
         public PackageManagerClientViewModel PackageManagerClientViewModel { get; private set; }
 
         /// <summary>
@@ -515,6 +528,7 @@ namespace Dynamo.ViewModels
             this.WatchHandler = startConfiguration.WatchHandler;
             var pmExtension = model.GetPackageManagerExtension();
             this.PackageManagerClientViewModel = new PackageManagerClientViewModel(this, pmExtension.PackageManagerClient);
+            this.LibraryViewModel = new LibraryViewModel(this);
             this.SearchViewModel = new SearchViewModel(this);
 
             // Start page should not show up during test mode.
@@ -2426,5 +2440,18 @@ namespace Dynamo.ViewModels
         }
 
         #endregion
+    }
+
+    public class LibraryViewModel
+    {
+        private readonly Search.NodeSearchModel nodeSearchModel;
+        private readonly DynamoViewModel dynamoViewModel;
+
+        internal LibraryViewModel(DynamoViewModel dynamoViewModel)
+        {
+            nodeSearchModel = dynamoViewModel.Model.SearchModel;
+            this.dynamoViewModel = dynamoViewModel;
+
+        }
     }
 }

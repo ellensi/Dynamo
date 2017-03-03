@@ -580,6 +580,7 @@ namespace Dynamo.Controls
                 {
                     // Does nothing for now.
                 };
+                libraryContainer.SetDynamoViewModel(dynamoViewModel);
 
                 SetLoadedTypesRaw(libraryContainer, dynamoViewModel.Model.SearchModel.SearchEntries);
             }
