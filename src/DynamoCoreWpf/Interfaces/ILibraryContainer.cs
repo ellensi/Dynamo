@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Dynamo.ViewModels;
 
 namespace Dynamo.Wpf.Interfaces
 {
@@ -48,6 +47,5 @@ namespace Dynamo.Wpf.Interfaces
         void SetLoadedTypesJson(string loadedTypesJson);
 
         void SetLoadedTypesRaw(string loadedTypesRaw);
-        void SetDynamoViewModel(DynamoViewModel dynamoViewModel);
     }
 }

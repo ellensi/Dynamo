@@ -1,12 +1,13 @@
 ﻿
 using CefSharp;
+using Dynamo.ViewModels;
 using Dynamo.Wpf.Interfaces;
+using Dynamo.Wpf.ViewModels.Core;
+using Microsoft.Practices.Prism.Commands;
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using Dynamo.ViewModels;
 using System.Linq;
-using Microsoft.Practices.Prism.Commands;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Dynamo.HostedContents
@@ -19,13 +20,20 @@ namespace Dynamo.HostedContents
         private bool browserLoaded = false;
         private string loadedTypesJson = String.Empty;
         private string loadedTypesRaw = String.Empty;
-        private DynamoViewModel dynamoViewModel;
+        private LibraryContainerViewModel viewModel = null;
 
-        public LibraryContainer()
+        public LibraryContainer(LibraryContainerViewModel libraryContainerViewModel)
         {
+            this.viewModel = libraryContainerViewModel;
+
             if (!Cef.IsInitialized)
             {
-                var settings = new CefSettings { RemoteDebuggingPort = 8088 };
+                var settings = new CefSettings
+                {
+#if DEBUG
+                    RemoteDebuggingPort = 8088
+#endif
+                };
                 Cef.Initialize(settings);
             }
 
@@ -51,11 +59,6 @@ namespace Dynamo.HostedContents
             this.loadedTypesRaw = loadedTypesRaw;
         }
 
-        public void SetDynamoViewModel(DynamoViewModel dynamoViewModel)
-        {
-            this.dynamoViewModel = dynamoViewModel;
-        }
-
         #endregion
 
         #region Gateway Methods: from JavaScript to .NET (public methods)
@@ -74,7 +77,7 @@ namespace Dynamo.HostedContents
         {
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
-                dynamoViewModel.OnLibraryContainerClicked(id);
+                viewModel.OnLibraryContainerClicked(id);
             }));
         }
 
@@ -101,6 +104,7 @@ namespace Dynamo.HostedContents
         {
             public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model)
             {
+                // Disable right-click context menu on the library browser
                 model.Clear();
             }
 
